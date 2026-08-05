@@ -8,6 +8,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: recruit_ai
+      PYTHONDONTWRITEBYTECODE: "1"
 
     ports:
       - "5432:5432"
@@ -18,10 +19,13 @@ services:
   backend:
     build:
       context: ./backend
+    volumes:
+    - ./backend:/app
+    - ./backend/uploads:/app/uploads
 
     container_name: recruit-ai-api
 
-    ports:
+    ports: 
       - "8000:8000"
 
     env_file:
