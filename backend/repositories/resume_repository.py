@@ -1,0 +1,45 @@
+import uuid
+
+from sqlalchemy.orm import Session
+
+from models.resumes import Resume
+
+
+class ResumeRepository:
+
+    @staticmethod
+    def create(db: Session, resume_data: dict) -> Resume:
+        resume = Resume(**resume_data)
+        db.add(resume)
+        db.commit()
+        db.refresh(resume)
+        return resume
+
+    @staticmethod
+    def get_by_id(db: Session, resume_id: uuid.UUID) -> Resume | None:
+        return db.query(Resume).filter(Resume.id == resume_id).first()
+
+    @staticmethod
+    def list_by_user(db: Session, user_id: uuid.UUID, skip: int = 0, limit: int = 20) -> list[Resume]:
+        return (
+            db.query(Resume)
+            .filter(Resume.user_id == user_id)
+            .order_by(Resume.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
+    def update(db: Session, resume: Resume, updates: dict) -> Resume:
+        for field, value in updates.items():
+            setattr(resume, field, value)
+        db.add(resume)
+        db.commit()
+        db.refresh(resume)
+        return resume
+
+    @staticmethod
+    def delete(db: Session, resume: Resume) -> None:
+        db.delete(resume)
+        db.commit()
