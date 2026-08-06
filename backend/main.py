@@ -5,9 +5,12 @@ from core.config import settings
 from database.session import engine
 from models.base import Base
 from api.middleware.error_handler import app_error_handler
+from api.middleware.response_handler import ResponseMiddleware
+
 from core.exceptions import AppError
 
 app = FastAPI(title=settings.APP_NAME)
+app.add_middleware(ResponseMiddleware)
 app.add_exception_handler(AppError, app_error_handler)
 
 

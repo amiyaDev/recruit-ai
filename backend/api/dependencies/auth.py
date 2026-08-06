@@ -1,6 +1,6 @@
 import jwt
 from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from api.dependencies.database import get_db
@@ -9,15 +9,15 @@ from core.security import decode_access_token
 from models.user import User
 from repositories.user_repository import UserRepository
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
+bearer_scheme = HTTPBearer()
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
     db: Session = Depends(get_db),
 ) -> User:
     try:
-        payload = decode_access_token(token)
+        payload = decode_access_token(credentials.credentials)
     except jwt.PyJWTError:
         raise UnauthorizedError("Invalid or expired access token")
 
