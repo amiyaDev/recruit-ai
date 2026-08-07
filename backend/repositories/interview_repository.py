@@ -1,0 +1,60 @@
+import uuid
+
+from sqlalchemy.orm import Session
+
+from models.interview import InterviewQuestion, InterviewSession
+
+
+class InterviewRepository:
+
+    @staticmethod
+    def create_session(db: Session, data: dict) -> InterviewSession:
+        session = InterviewSession(**data)
+        db.add(session)
+        db.commit()
+        db.refresh(session)
+        return session
+
+    @staticmethod
+    def get_session_by_id(db: Session, session_id: uuid.UUID) -> InterviewSession | None:
+        return db.query(InterviewSession).filter(InterviewSession.id == session_id).first()
+
+    @staticmethod
+    def update_session(db: Session, session: InterviewSession, updates: dict) -> InterviewSession:
+        for field, value in updates.items():
+            setattr(session, field, value)
+        db.add(session)
+        db.commit()
+        db.refresh(session)
+        return session
+
+    @staticmethod
+    def bulk_create_questions(db: Session, questions_data: list[dict]) -> list[InterviewQuestion]:
+        questions = [InterviewQuestion(**data) for data in questions_data]
+        db.add_all(questions)
+        db.commit()
+        for q in questions:
+            db.refresh(q)
+        return questions
+
+    @staticmethod
+    def get_questions_by_session(db: Session, session_id: uuid.UUID) -> list[InterviewQuestion]:
+        return (
+            db.query(InterviewQuestion)
+            .filter(InterviewQuestion.session_id == session_id)
+            .order_by(InterviewQuestion.created_at)
+            .all()
+        )
+
+    @staticmethod
+    def get_question_by_id(db: Session, question_id: uuid.UUID) -> InterviewQuestion | None:
+        return db.query(InterviewQuestion).filter(InterviewQuestion.id == question_id).first()
+
+    @staticmethod
+    def update_question(db: Session, question: InterviewQuestion, updates: dict) -> InterviewQuestion:
+        for field, value in updates.items():
+            setattr(question, field, value)
+        db.add(question)
+        db.commit()
+        db.refresh(question)
+        return question

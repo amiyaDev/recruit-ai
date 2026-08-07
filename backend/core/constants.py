@@ -26,8 +26,32 @@ class JobStatus(str, enum.Enum):
     FAILED = "failed"
 
 
+class InterviewDifficulty(str, enum.Enum):
+    EASY = "easy"
+    MEDIUM = "medium"
+    HARD = "hard"
+
+
+class InterviewSessionStatus(str, enum.Enum):
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+
+
+class QuestionType(str, enum.Enum):
+    TECHNICAL = "technical"
+    BEHAVIORAL = "behavioral"
+
+
+class ChatRole(str, enum.Enum):
+    USER = "user"
+    ASSISTANT = "assistant"
+
+
 class LLMFeature(str, enum.Enum):
     ATS_SUGGESTIONS = "ats_suggestions"
+    INTERVIEW_GENERATE = "interview_generate"
+    INTERVIEW_EVALUATE = "interview_evaluate"
+    CHAT = "chat"
 
 
 MAX_RESUME_SIZE_BYTES = 5 * 1024 * 1024  # 5MB
@@ -66,3 +90,6 @@ JOBS_COLLECTION = "jobs"
 
 GPT_4O_MINI_INPUT_PRICE_PER_1M = 0.15
 GPT_4O_MINI_OUTPUT_PRICE_PER_1M = 0.60
+
+MAX_INTERVIEW_QUESTIONS = 5
+MAX_CHAT_HISTORY_MESSAGES = 8
