@@ -1,38 +1,40 @@
 services:
   db:
     image: postgres:17
-
     container_name: recruit-ai-db
-
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: recruit_ai
       PYTHONDONTWRITEBYTECODE: "1"
-
     ports:
       - "5432:5432"
-
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: recruit-ai-qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
 
   backend:
     build:
       context: ./backend
     volumes:
-    - ./backend:/app
-    - ./backend/uploads:/app/uploads
-
+      - ./backend:/app
+      - ./backend/uploads:/app/uploads
     container_name: recruit-ai-api
-
-    ports: 
+    ports:
       - "8000:8000"
-
     env_file:
       - ./backend/.env
-
     depends_on:
       - db
+      - qdrant
 
 volumes:
   postgres_data:
+  qdrant_data:

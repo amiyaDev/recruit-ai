@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from api.v1.endpoints.auth import router as auth_router
 from api.v1.endpoints.users import router as user_router
 from api.v1.endpoints.resumes import router as resume_router
+from api.v1.endpoints.jobs import router as job_router
 
 api_router = APIRouter()
 
@@ -21,3 +22,4 @@ api_router.include_router(
     prefix="/resumes",
     tags=["Resumes"],
 )
+api_router.include_router(job_router, prefix="/jobs", tags=["Jobs"])

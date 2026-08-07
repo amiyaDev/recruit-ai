@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
-
+    QDRANT_URL: str = "http://qdrant:6333"
     class Config:
         env_file = ".env"
 
