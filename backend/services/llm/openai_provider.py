@@ -9,11 +9,12 @@ _client = OpenAI(api_key=settings.OPENAI_API_KEY)
 class OpenAIProvider(LLMProvider):
     MODEL = "gpt-4o-mini"
 
-    def generate(self, prompt: str) -> tuple[str, int, int]:
+    def generate(self, prompt: str, json_mode: bool = True) -> tuple[str, int, int]:
+        kwargs = {"response_format": {"type": "json_object"}} if json_mode else {}
         response = _client.chat.completions.create(
             model=self.MODEL,
             messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
+            **kwargs,
         )
         content = response.choices[0].message.content
         usage = response.usage
