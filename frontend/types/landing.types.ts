@@ -1,23 +1,23 @@
-import type { LucideIcon } from "lucide-react"
-
-export interface Feature {
-  icon: LucideIcon
-  title: string
-  description: string
+export interface NavLink {
+  label: string;
+  href: string;
 }
 
-export interface Step {
-  number: number
-  title: string
-  description: string
+export interface TrustedCompany {
+  name: string;
+  icon: string;
 }
 
 export interface Stat {
-  label: string
-  value: string
+  label: string;
+  value: string;
+  emphasis?: boolean;
 }
 
-export interface NavLink {
-  label: string
-  href: string
+export interface Testimonial {
+  initials: string;
+  name: string;
+  role: string;
+  quote: string;
+  avatarClassName: string;
 }

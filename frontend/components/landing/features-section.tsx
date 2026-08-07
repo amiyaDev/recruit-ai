@@ -1,23 +1,28 @@
-import { FEATURES } from "@/constants/landing-content"
-import { FeatureCard } from "@/components/landing/feature-card"
+import { ScrollReveal } from "@/components/landing/scroll-reveal";
+import { BentoResumeParsingCard } from "@/components/landing/bento-resume-parsing-card";
+import { BentoInterviewPrepCard } from "@/components/landing/bento-interview-prep-card";
+import { BentoMarketInsightsCard } from "@/components/landing/bento-market-insights-card";
+import { BentoCtaCard } from "@/components/landing/bento-cta-card";
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          Everything you need to get hired
+    <ScrollReveal className="space-y-12" id="features">
+      <div className="text-center space-y-4 max-w-2xl mx-auto">
+        <h2 className="font-headline-lg text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+          Powerful tools for your job search
         </h2>
-        <p className="mt-4 text-lg text-muted-foreground">
-          One toolkit, from your first upload to your final interview.
+        <p className="font-body-md text-muted-foreground text-lg">
+          Everything you need to stand out in today&apos;s competitive market, powered by
+          advanced artificial intelligence.
         </p>
       </div>
 
-      <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {FEATURES.map((feature) => (
-          <FeatureCard key={feature.title} {...feature} />
-        ))}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <BentoResumeParsingCard />
+        <BentoInterviewPrepCard />
+        <BentoMarketInsightsCard />
+        <BentoCtaCard />
       </div>
-    </section>
-  )
+    </ScrollReveal>
+  );
 }

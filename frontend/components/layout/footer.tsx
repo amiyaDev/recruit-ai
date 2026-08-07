@@ -1,57 +1,49 @@
-import Link from "next/link"
-import { Sparkles } from "lucide-react"
-
-import { Separator } from "@/components/ui/separator"
-
-const FOOTER_LINKS: Record<string, string[]> = {
-  Product: ["Features", "How it works"],
-  Company: ["About", "Contact"],
-  Legal: ["Privacy", "Terms"],
-}
+import { ScrollReveal } from "@/components/landing/scroll-reveal";
+import { FOOTER_LINKS } from "@/constants/landing-content";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/50">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Sparkles className="size-4" />
-              </span>
-              <span className="text-lg">RecruitAI</span>
-            </Link>
-            <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-              AI-powered resume analysis, ATS optimization, interview practice, and career
-              coaching.
-            </p>
-          </div>
-
-          {Object.entries(FOOTER_LINKS).map(([heading, links]) => (
-            <div key={heading}>
-              <h3 className="text-sm font-semibold">{heading}</h3>
-              <ul className="mt-3 space-y-2">
-                {links.map((link) => (
-                  <li key={link}>
-                    <Link
-                      href="#"
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      {link}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+    <ScrollReveal
+      as="footer"
+      className="w-full py-16 bg-surface-container-lowest dark:bg-[#070a11] border-t border-outline-variant/30 dark:border-white/10"
+    >
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-8 max-w-7xl mx-auto">
+        <div className="col-span-2 md:col-span-1 space-y-6">
+          <a className="flex items-center gap-2 group" href="#">
+            <img
+              alt="RecruitAI logo"
+              className="w-8 h-8 object-contain rounded-md"
+              src="https://lh3.googleusercontent.com/aida/AP1WRLusUdBP0fC9M-p_pfveggZ8O2uPIlnKUHejtnsT8RxoVDMc1yfNJQwcty5AUpTetzl2AXjS5UONEEv-kcwwH7DMMc2ONSo5gTS9exIc2RIGNc7YSedeRQjjqw7vfStZeH9xmRdxepqI8zXHYmI1SJ2iRKjh-U65-ufsjKaLwHRgyRvmAHPLoE4SKVhfYNb4SluXpTUjO3_0CYX5xBzC1U0rh2l_M2KH2OhFw17kHcBJYtcJY53yWIXRq9k"
+            />
+            <span className="font-headline-md text-lg font-bold text-foreground">RecruitAI</span>
+          </a>
+          <p className="font-body-md text-sm text-muted-foreground max-w-xs leading-relaxed">
+            Empowering careers through intelligence.
+          </p>
+          <p className="font-body-md text-xs text-outline mt-4">
+            &copy; {new Date().getFullYear()} RecruitAI.
+          </p>
         </div>
 
-        <Separator className="my-8" />
-
-        <p className="text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} RecruitAI. All rights reserved.
-        </p>
+        {Object.entries(FOOTER_LINKS).map(([heading, links]) => (
+          <div key={heading} className="space-y-4">
+            <h4 className="font-headline-md text-base font-semibold text-primary dark:text-primary-fixed">
+              {heading}
+            </h4>
+            <div className="flex flex-col gap-3">
+              {links.map((link) => (
+                <a
+                  key={link}
+                  href="#"
+                  className="font-body-md text-sm text-muted-foreground hover:text-primary dark:hover:text-white hover:translate-x-1 transition-all duration-200 w-fit"
+                >
+                  {link}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
-    </footer>
-  )
+    </ScrollReveal>
+  );
 }

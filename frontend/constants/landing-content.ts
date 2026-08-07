@@ -1,71 +1,52 @@
-import { FileText, Gauge, Mic, MessageCircle, Sparkles } from "lucide-react"
-
-import type { Feature, NavLink, Stat, Step } from "@/types/landing.types"
+import type { NavLink, Stat, Testimonial, TrustedCompany } from "@/types/landing.types";
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Features", href: "#features" },
   { label: "How it works", href: "#how-it-works" },
-]
+];
 
-export const FEATURES: Feature[] = [
-  {
-    icon: FileText,
-    title: "Smart Resume Parsing",
-    description:
-      "Upload your resume and let AI extract your skills, contact details, and experience in seconds — PDF or DOCX.",
-  },
-  {
-    icon: Gauge,
-    title: "ATS Score & Optimization",
-    description:
-      "Get an instant compatibility score against any job description, with keyword gaps and actionable suggestions.",
-  },
-  {
-    icon: Sparkles,
-    title: "Semantic Job Matching",
-    description:
-      "Powered by vector embeddings, see how well you truly match a role — beyond simple keyword matching.",
-  },
-  {
-    icon: Mic,
-    title: "AI Interview Practice",
-    description:
-      "Practice with tailored technical and behavioral questions, then get detailed, per-answer feedback.",
-  },
-  {
-    icon: MessageCircle,
-    title: "AI Career Assistant",
-    description:
-      "Chat with an AI coach that knows your resume and helps you navigate skills, gaps, and next moves.",
-  },
-]
-
-export const STEPS: Step[] = [
-  {
-    number: 1,
-    title: "Upload your resume",
-    description: "Drop in a PDF or DOCX and we'll parse your skills and experience automatically.",
-  },
-  {
-    number: 2,
-    title: "Add a job description",
-    description: "Paste in a role you're targeting so we know what to match you against.",
-  },
-  {
-    number: 3,
-    title: "Get your ATS score",
-    description: "See exactly what's missing and how to improve your resume for that role.",
-  },
-  {
-    number: 4,
-    title: "Practice & get coached",
-    description: "Run a mock interview and chat with your AI career assistant to close the gap.",
-  },
-]
+export const TRUSTED_BY: TrustedCompany[] = [
+  { name: "CloudSys", icon: "cloud" },
+  { name: "DataTech", icon: "data_exploration" },
+  { name: "NexusAPI", icon: "api" },
+  { name: "ShieldNet", icon: "security" },
+  { name: "OmniHub", icon: "hub" },
+];
 
 export const STATS: Stat[] = [
-  { label: "Resumes analyzed", value: "10K+" },
-  { label: "Interview questions practiced", value: "50K+" },
-  { label: "Avg. ATS score improvement", value: "+32%" },
-  { label: "User satisfaction", value: "95%" },
-]
+  { label: "Avg ATS Improvement", value: "45%", emphasis: true },
+  { label: "User Satisfaction", value: "98%" },
+];
+
+export const TESTIMONIALS: Testimonial[] = [
+  {
+    initials: "SJ",
+    name: "Sarah J.",
+    role: "Product Manager",
+    quote:
+      "RecruitAI completely revamped my resume. The ATS optimizer helped me land interviews at top tech companies within weeks.",
+    avatarClassName: "bg-primary-container/20 text-primary dark:text-primary-fixed",
+  },
+  {
+    initials: "MR",
+    name: "Michael R.",
+    role: "Senior Developer",
+    quote:
+      "The mock interview feature is a game-changer. It gave me the confidence to nail my final rounds. Highly recommended!",
+    avatarClassName: "bg-secondary-container/20 text-secondary dark:text-secondary-fixed-dim",
+  },
+  {
+    initials: "AL",
+    name: "Amanda L.",
+    role: "UX Designer",
+    quote:
+      "I transitioned to a new industry and the semantic match feature found roles I wouldn't have even considered applying for.",
+    avatarClassName: "bg-tertiary-container/20 text-tertiary dark:text-tertiary-fixed",
+  },
+];
+
+export const FOOTER_LINKS: Record<string, string[]> = {
+  Product: ["Features", "Pricing"],
+  Company: ["About", "Careers"],
+  Legal: ["Privacy", "Terms"],
+};
