@@ -1,26 +1,506 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* shadcn semantic slots, remapped to the Stitch brand palette */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-montserrat);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-DEFAULT: 0.25rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-full: 9999px;
+
+  /* Material Design 3 token palette straight from the Stitch export */
+  --color-secondary-fixed-dim: var(--secondary-fixed-dim);
+  --color-primary-fixed: var(--primary-fixed);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-variant: var(--surface-variant);
+  --color-on-error: var(--on-error);
+  --color-outline: var(--outline);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-on-primary-fixed: var(--on-primary-fixed);
+  --color-on-secondary-fixed: var(--on-secondary-fixed);
+  --color-primary-container: var(--primary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+  --color-on-primary-fixed-variant: var(--on-primary-fixed-variant);
+  --color-on-tertiary-fixed-variant: var(--on-tertiary-fixed-variant);
+  --color-secondary-container: var(--secondary-container);
+  --color-surface-bright: var(--surface-bright);
+  --color-error-container: var(--error-container);
+  --color-error: var(--error);
+  --color-surface: var(--surface);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-tertiary: var(--tertiary);
+  --color-on-primary: var(--on-primary);
+  --color-on-tertiary-fixed: var(--on-tertiary-fixed);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-on-surface: var(--inverse-on-surface);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-secondary-fixed: var(--secondary-fixed);
+  --color-surface-tint: var(--surface-tint);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-primary-fixed-dim: var(--primary-fixed-dim);
+  --color-inverse-primary: var(--inverse-primary);
+  --color-on-secondary: var(--on-secondary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-on-error-container: var(--on-error-container);
+  --color-surface-container: var(--surface-container);
+  --color-tertiary-fixed: var(--tertiary-fixed);
+  --color-outline-variant: var(--outline-variant);
+  --color-on-background: var(--on-background);
+  --color-on-secondary-fixed-variant: var(--on-secondary-fixed-variant);
+  --color-on-surface: var(--on-surface);
+  --color-tertiary-fixed-dim: var(--tertiary-fixed-dim);
+
+  /* Custom spacing scale from the Stitch export */
+  --spacing-section-gap: 80px;
+  --spacing-base: 4px;
+  --spacing-stack-lg: 32px;
+  --spacing-container-margin: 24px;
+  --spacing-stack-sm: 8px;
+  --spacing-stack-md: 16px;
+  --spacing-gutter: 20px;
+
+  /* Custom font families from the Stitch export */
+  --font-body-md: var(--font-inter);
+  --font-headline-md: var(--font-montserrat);
+  --font-display-lg: var(--font-montserrat);
+  --font-body-lg: var(--font-inter);
+  --font-headline-lg-mobile: var(--font-montserrat);
+  --font-label-sm: var(--font-inter);
+  --font-headline-lg: var(--font-montserrat);
+
+  /* Custom font sizes from the Stitch export */
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.5;
+  --text-body-md--font-weight: 400;
+
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 1.3;
+  --text-headline-md--font-weight: 600;
+
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 800;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.6;
+  --text-body-lg--font-weight: 400;
+
+  --text-headline-lg-mobile: 24px;
+  --text-headline-lg-mobile--line-height: 1.2;
+  --text-headline-lg-mobile--font-weight: 700;
+
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 1;
+  --text-label-sm--letter-spacing: 0.05em;
+  --text-label-sm--font-weight: 600;
+
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 1.2;
+  --text-headline-lg--font-weight: 700;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* shadcn semantic slots -> Stitch light palette */
+  --background: #faf8ff;
+  --foreground: #131b2e;
+  --card: #ffffff;
+  --card-foreground: #131b2e;
+  --popover: #ffffff;
+  --popover-foreground: #131b2e;
+  --primary: #3525cd;
+  --primary-foreground: #ffffff;
+  --secondary: #006591;
+  --secondary-foreground: #ffffff;
+  --muted: #f2f3ff;
+  --muted-foreground: #464555;
+  --accent: #eaedff;
+  --accent-foreground: #131b2e;
+  --destructive: #ba1a1a;
+  --border: #c7c4d8;
+  --input: #c7c4d8;
+  --ring: #3525cd;
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: #f2f3ff;
+  --sidebar-foreground: #131b2e;
+  --sidebar-primary: #3525cd;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eaedff;
+  --sidebar-accent-foreground: #131b2e;
+  --sidebar-border: #c7c4d8;
+  --sidebar-ring: #3525cd;
+
+  /* Material Design 3 palette (identical values across both Stitch exports) */
+  --secondary-fixed-dim: #89ceff;
+  --primary-fixed: #e2dfff;
+  --surface-dim: #d2d9f4;
+  --surface-variant: #dae2fd;
+  --on-error: #ffffff;
+  --outline: #777587;
+  --on-surface-variant: #464555;
+  --on-primary-fixed: #0f0069;
+  --on-secondary-fixed: #001e2f;
+  --primary-container: #4f46e5;
+  --on-tertiary-container: #69f1de;
+  --on-primary-fixed-variant: #3323cc;
+  --on-tertiary-fixed-variant: #005048;
+  --secondary-container: #39b8fd;
+  --surface-bright: #faf8ff;
+  --error-container: #ffdad6;
+  --error: #ba1a1a;
+  --surface: #faf8ff;
+  --surface-container-highest: #dae2fd;
+  --tertiary: #00534a;
+  --on-primary: #ffffff;
+  --on-tertiary-fixed: #00201c;
+  --on-secondary-container: #004666;
+  --surface-container-high: #e2e7ff;
+  --inverse-surface: #283044;
+  --inverse-on-surface: #eef0ff;
+  --surface-container-lowest: #ffffff;
+  --secondary-fixed: #c9e6ff;
+  --surface-tint: #4d44e3;
+  --surface-container-low: #f2f3ff;
+  --primary-fixed-dim: #c3c0ff;
+  --inverse-primary: #c3c0ff;
+  --on-secondary: #ffffff;
+  --tertiary-container: #006d62;
+  --on-tertiary: #ffffff;
+  --on-primary-container: #dad7ff;
+  --on-error-container: #93000a;
+  --surface-container: #eaedff;
+  --tertiary-fixed: #71f8e4;
+  --outline-variant: #c7c4d8;
+  --on-background: #131b2e;
+  --on-secondary-fixed-variant: #004c6e;
+  --on-surface: #131b2e;
+  --tertiary-fixed-dim: #4fdbc8;
+}
+
+.dark {
+  /* shadcn semantic slots -> Stitch dark palette (hand-tuned per the dark export, not a mechanical inversion) */
+  --background: #0b0f19;
+  --foreground: #faf8ff;
+  --card: #11162a;
+  --card-foreground: #faf8ff;
+  --popover: #11162a;
+  --popover-foreground: #faf8ff;
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+  --secondary: #39b8fd;
+  --secondary-foreground: #0b0f19;
+  --muted: #151a2e;
+  --muted-foreground: #d2d9f4;
+  --accent: #151a2e;
+  --accent-foreground: #faf8ff;
+  --destructive: #ba1a1a;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #4f46e5;
+  --sidebar: #11162a;
+  --sidebar-foreground: #faf8ff;
+  --sidebar-primary: #4f46e5;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #151a2e;
+  --sidebar-accent-foreground: #faf8ff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #4f46e5;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ---------------------------------------------------------------- */
+/* Custom component classes, transcribed from the Stitch light/dark  */
+/* exports and reconciled into one dark-mode-aware set via .dark     */
+/* ---------------------------------------------------------------- */
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+.dark .glass-nav {
+  background: rgba(11, 15, 25, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shadcn-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border-radius: 0.75rem;
+  transition:
+    box-shadow 0.2s ease-in-out,
+    transform 0.2s ease-in-out;
+}
+.shadcn-card:hover {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+.dark .shadcn-card {
+  background: rgba(11, 15, 25, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+.dark .shadcn-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 20px 40px rgba(79, 70, 229, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.shadcn-btn-primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #3525cd 100%);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+}
+.shadcn-btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.dark .shadcn-btn-primary {
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  transition: all 0.3s ease;
+}
+.dark .shadcn-btn-primary:hover {
+  background: linear-gradient(135deg, #5c54ed, #4232de);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.6);
+  transform: translateY(-2px);
+  opacity: 1;
+}
+
+.shadcn-btn-outline {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+.shadcn-btn-outline:hover {
+  background-color: #f8fafc;
+}
+.dark .shadcn-btn-outline {
+  background: rgba(11, 15, 25, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #d2d9f4;
+}
+.dark .shadcn-btn-outline:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #4f46e5 0%, #006d62 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.dark .text-gradient {
+  background: linear-gradient(to right, #e2dfff, #71f8e4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.dark .scroll-reveal {
+  transform: translateY(30px);
+  transition:
+    opacity 0.8s ease-out,
+    transform 0.8s ease-out;
+}
+
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.dark .bg-grid-pattern {
+  display: none;
+}
+
+.ambient-glow-1 {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+}
+.dark .ambient-glow-1 {
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+}
+
+.ambient-glow-2 {
+  position: absolute;
+  bottom: 20%;
+  right: -10%;
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle, rgba(113, 248, 228, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+}
+.dark .ambient-glow-2 {
+  background: radial-gradient(circle, rgba(113, 248, 228, 0.1) 0%, transparent 70%);
+}
+
+@property --progress {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+.ats-conic-ring {
+  background: conic-gradient(#006d62 var(--progress), #e2e8f0 var(--progress));
+  border-radius: 50%;
+  -webkit-mask: radial-gradient(transparent 58%, black 60%);
+  mask: radial-gradient(transparent 58%, black 60%);
+  animation: fillConic 1.5s ease-out forwards;
+}
+@keyframes fillConic {
+  from {
+    --progress: 0%;
+  }
+  to {
+    --progress: 85%;
+  }
+}
+.dark .ats-conic-ring {
+  background: conic-gradient(#4fdbc8 var(--progress), rgba(255, 255, 255, 0.1) 0);
+  animation: fillConicDark 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  -webkit-mask-image: radial-gradient(transparent 52%, black 54%);
+  mask-image: radial-gradient(transparent 52%, black 54%);
+}
+@keyframes fillConicDark {
+  to {
+    --progress: 92%;
+  }
+}
+
+@keyframes float-card {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.floating-card {
+  animation: float-card 6s ease-in-out infinite;
+}
+.floating-card:nth-child(2) {
+  animation-delay: 1s;
+}
+.floating-card:nth-child(3) {
+  animation-delay: 2s;
+}
+.floating-card:nth-child(4) {
+  animation-delay: 0.5s;
+}
+.floating-card:hover {
+  animation-play-state: paused;
 }
