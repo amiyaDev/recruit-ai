@@ -1,5 +1,5 @@
 import uuid
-
+import math
 from fastembed import TextEmbedding
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct ,Distance, VectorParams
@@ -34,3 +34,20 @@ def upsert_vector(collection_name:str, point_id:uuid.UUID, text:str,payload:dict
 def delete_vector(collection_name:str, point_id:uuid.UUID) -> None:
     if _client.collection_exists(collection_name):
         _client.delete(collection_name=collection_name,points_selector=[str(point_id)])
+        
+
+
+def get_vector(collection_name: str, point_id: uuid.UUID) -> list[float] | None:
+    points = _client.retrieve(collection_name=collection_name, ids=[str(point_id)], with_vectors=True)
+    if not points:
+        return None
+    return points[0].vector
+
+
+def cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
+    dot = sum(a * b for a, b in zip(vec_a, vec_b))
+    norm_a = math.sqrt(sum(a * a for a in vec_a))
+    norm_b = math.sqrt(sum(b * b for b in vec_b))
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+    return dot / (norm_a * norm_b)

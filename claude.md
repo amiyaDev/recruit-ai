@@ -3,10 +3,12 @@
 > AI-powered resume analysis, ATS optimization, interview preparation, and job
 > recommendation platform.
 >
-> This document is the single source of truth for the system design. It
-> supersedes the earlier draft roadmap. Section 15 maps **what already exists
-> in code today** to this target architecture, and Section 16 gives the build
-> order.
+> This document is the single source of truth for the system design. Section
+> 16 gives the build order and current status — **Phases 1–4 (Foundation &
+> Auth, Resume Pipeline, Embeddings, ATS Engine) are built and verified
+> end-to-end. Phase 5 (Interviews & Chat) is next.** Section 15 is a
+> historical record of the original code cleanup done at the start of
+> Phase 1 (now resolved).
 
 ---
 
@@ -75,11 +77,11 @@ RecruitAI helps a job seeker:
 | Migrations | **Alembic** | You currently use `Base.metadata.create_all()` in `main.py` — fine for a prototype, unsafe once real user data exists (no way to alter a column without dropping data). Alembic gives versioned, reversible schema changes. **Must land before Phase 1 auth changes.** |
 | Password hashing | **passlib[bcrypt]** | Already in `requirements.txt`, unused. bcrypt is the industry baseline — adaptive cost factor, salts automatically, no known practical break. |
 | Tokens | **PyJWT** | Already installed. Short-lived access token (15 min) + longer-lived refresh token (7–30 days), rotated on use. |
-| Background jobs | **arq + Redis** | Async-native task queue (author of Pydantic) — tasks are plain `async def` functions, so no sync/async bridging is needed to call your async FastAPI/DB/LLM code, unlike Celery which is sync-first. Built-in cron-style scheduling means no separate "beat" process. One Redis connection, already in your stack, does broker duty too. Trade-off vs Celery: smaller ecosystem/tooling (no Flower-style dashboard) — acceptable for this project's scale. |
-| Vector search | **Qdrant** (already planned) + **Qdrant Python client** | Open-source, self-hostable (fits your Docker Compose setup), fast filtered vector search (needed for "match resumes for job X, only active resumes"). |
-| Embeddings | **`sentence-transformers`** (`all-MiniLM-L6-v2`), local, default | Runs on your own machine/container, **$0 API cost** — this matters directly because your LLM budget is a fixed $5 OpenAI credit (§18) meant to demo the project, and embeddings would otherwise quietly compete with chat/interview generation for that same budget. Quality is slightly below OpenAI's `text-embedding-3-small`, but more than sufficient for resume/job cosine-similarity matching. Swapping in a hosted embedding provider later is a one-line change behind the same `embedding_service.py` interface. |
-| LLM orchestration | Direct OpenAI SDK behind a **`LLMProvider` interface**, not LangChain | LangChain adds a large abstraction/versioning surface for what you actually need: "send prompt, get completion" + occasional structured JSON output. A 40-line interface (`generate(prompt) -> str`) is easier to debug and to mock in tests. The interface exists so Gemini/Anthropic adapters can be added later without touching call sites — but for now, only the OpenAI adapter is built, using `gpt-4o-mini` (the cheapest capable chat model) everywhere, to make the most of a small fixed credit. |
-| Resume parsing | **PyMuPDF** (PDF, already in use) + **python-docx** (DOCX, not yet added) + **spaCy** (NER: name/email/skills/org) | PyMuPDF is the fastest PDF text extractor in Python. spaCy's pretrained NER model gives you entity extraction (PERSON, ORG, skills via a phrase matcher) without training your own model — and it's local/free, same cost reasoning as embeddings above. |
+| Background jobs | **arq + Redis** — *not built yet, still fully synchronous* | Planned for when resume/job processing is actually slow enough to justify it (per the "sync first" rule below). As of Phase 4, upload→parse and job-create→embed still run inline inside the request and haven't needed to move off it — no Redis, no worker process exists in the stack yet. Revisit if upload latency becomes a real problem. |
+| Vector search | **Qdrant** — **built** | Self-hosted via Docker Compose (`recruit-ai-qdrant`), two collections (`resumes`, `jobs`), 384-dim vectors, cosine distance. Verified working via direct Qdrant search queries (§7). |
+| Embeddings | **`fastembed`** (`BAAI/bge-small-en-v1.5`), local — **built**, swapped from the originally-planned `sentence-transformers` | Same $0-cost reasoning as before, but `fastembed` (built by the Qdrant team, ONNX-based) avoids pulling in full PyTorch, which `sentence-transformers` requires — meaningfully smaller Docker image and faster cold start, better fit for a small self-hosted VM. Model cache persisted under `backend/.fastembed_cache` (bind-mounted) so it isn't re-downloaded on every container rebuild. |
+| LLM orchestration | Direct OpenAI SDK behind a **`LLMProvider` interface** — **built** | `services/llm/base_provider.py` (interface) + `services/llm/openai_provider.py` (only adapter, `gpt-4o-mini`). Currently wired into the ATS suggestion flow only; Interviews/Chat (Phase 5) will reuse the same interface. |
+| Resume parsing | **PyMuPDF** (PDF) + **python-docx** (DOCX) — **built**; keyword/skill extraction is a curated word-list, **not spaCy yet** | Name/email/phone via regex, skills via word-boundary-safe matching (`services/keyword_service.py`) against a ~85-term curated list (`core/constants.py`) spanning languages/frameworks/cloud/data/testing. Deliberately simple — spaCy NER (for name extraction) and a broader open skill taxonomy (for domain coverage beyond tech) are known, still-free upgrades, not yet built. |
 | Rate limiting | **slowapi** (Redis-backed) | Protects `/auth/login` (brute force) and `/resumes` (upload abuse) cheaply, reuses the Redis you already run. |
 | Logging | **structlog** | JSON-structured logs are what you actually query in production (grep-able, filterable by request id), plain `print`/stdlib logging is not. |
 | Error tracking | **Sentry SDK** | Free tier is enough at your scale; without it, prod exceptions are invisible until a user complains. |
@@ -168,7 +170,7 @@ backend/
 │   ├── job_service.py
 │   ├── interview_service.py
 │   ├── chat_service.py
-│   ├── usage_tracker.py            # §18 — records estimated LLM cost per call, enforces budget ceiling
+│   ├── usage_tracker.py            # §17 — records estimated LLM cost per call, enforces budget ceiling
 │   └── llm/
 │       ├── base_provider.py        # LLMProvider interface
 │       └── openai_provider.py      # gpt-4o-mini adapter (only provider built for now)
@@ -228,44 +230,39 @@ refresh_tokens
 ├── revoked        boolean default false
 └── created_at     timestamptz
 
-resumes
+resumes                              -- built
 ├── id             UUID PK
 ├── user_id        UUID FK -> users.id, indexed
 ├── filename       varchar
 ├── file_path      varchar
 ├── file_type      enum(pdf, docx)
 ├── raw_text       text
-├── parsed_data    jsonb     -- {name, email, phone, skills[], education[], experience[], certifications[]}
-├── qdrant_point_id uuid nullable   -- pointer to the vector, not the vector itself
-├── version        int  default 1
-├── status         enum(uploaded, parsing, parsed, embedding, ready, failed)
-├── is_active      boolean default true
-├── created_at     timestamptz
-└── updated_at      timestamptz
-
-jobs
-├── id             UUID PK
-├── created_by      UUID FK -> users.id, nullable  -- null = system/public job
-├── title          varchar
-├── company        varchar
-├── description    text
-├── raw_text       text
-├── extracted_keywords jsonb
-├── qdrant_point_id uuid nullable
+├── parsed_data    jsonb     -- {email, phone, skills[]} — name/education/experience not yet extracted (needs spaCy, §3)
+├── status         enum(uploaded, parsing, parsed, failed)
 ├── created_at     timestamptz
 └── updated_at     timestamptz
 
-ats_scores
+jobs                                 -- built
+├── id             UUID PK
+├── created_by     UUID FK -> users.id, indexed   -- NOT nullable in the build (every job has an owner; no public/system jobs yet)
+├── title          varchar
+├── company        varchar nullable
+├── description    text
+├── extracted_keywords jsonb    -- list[str], same curated skill-list matcher as resumes.parsed_data.skills
+├── status         enum(pending, processing, ready, failed)
+├── created_at     timestamptz
+└── updated_at     timestamptz
+
+ats_scores                           -- built
 ├── id             UUID PK
 ├── resume_id      UUID FK -> resumes.id, indexed
-├── job_id         UUID FK -> jobs.id, nullable   -- nullable = generic ATS check, no JD
-├── score          float                          -- 0–100
-├── missing_keywords jsonb
-├── formatting_issues jsonb
-├── suggestions    jsonb
+├── job_id         UUID FK -> jobs.id, indexed   -- NOT nullable in the build (generic no-JD scoring isn't implemented)
+├── score          float     -- 0–100, = 0.6×cosine_similarity + 0.4×keyword_coverage (100% similarity-only if the job has zero extracted keywords)
+├── missing_keywords jsonb   -- job keywords not found in resume.parsed_data.skills
+├── suggestions    jsonb     -- list[str], gpt-4o-mini output
 ├── created_at     timestamptz
 
-interview_sessions
+interview_sessions                   -- planned, Phase 5, not yet built
 ├── id             UUID PK
 ├── user_id        UUID FK -> users.id, indexed
 ├── resume_id      UUID FK -> resumes.id, nullable
@@ -275,7 +272,7 @@ interview_sessions
 ├── created_at     timestamptz
 └── updated_at     timestamptz
 
-interview_questions
+interview_questions                  -- planned, Phase 5, not yet built
 ├── id             UUID PK
 ├── session_id     UUID FK -> interview_sessions.id, indexed
 ├── question_text  text
@@ -285,40 +282,46 @@ interview_questions
 ├── score          float nullable
 └── created_at     timestamptz
 
-chat_sessions
+chat_sessions                        -- planned, Phase 5, not yet built
 ├── id             UUID PK
 ├── user_id        UUID FK -> users.id, indexed
 ├── resume_id      UUID FK -> resumes.id, nullable   -- context anchor
 ├── title          varchar
 └── created_at     timestamptz
 
-chat_messages
+chat_messages                        -- planned, Phase 5, not yet built
 ├── id             UUID PK
 ├── session_id     UUID FK -> chat_sessions.id, indexed
 ├── role           enum(user, assistant)
 ├── content        text
 └── created_at     timestamptz
 
-llm_usage_log                        -- §18 cost governance
+llm_usage_log                        -- built (§17 cost governance)
 ├── id             UUID PK
 ├── user_id        UUID FK -> users.id, nullable, indexed
-├── feature        enum(interview_generate, interview_evaluate, chat, ats_suggestions)
+├── feature        enum(ats_suggestions)   -- will grow: interview_generate, interview_evaluate, chat (Phase 5)
 ├── input_tokens   int
 ├── output_tokens  int
 ├── estimated_cost_usd  numeric(10,6)
 └── created_at     timestamptz
 ```
 
+Note: no `qdrant_point_id` column on `resumes`/`jobs` — the row's own UUID `id`
+doubles as the Qdrant point ID directly (§3 design note), so there's nothing
+separate to keep in sync.
+
 **Design notes:**
 
 - `resumes.status` is the state machine that lets the frontend show
   "Parsing…" / "Ready" without polling three different tables — one field,
   driven by the arq pipeline (§7).
-- `llm_usage_log` exists purely to let `usage_tracker` (§18) answer "how much
+- `llm_usage_log` exists purely to let `usage_tracker` (§17) answer "how much
   of the $5 credit is left" without calling OpenAI's billing API — every LLM
-  call writes one row here with its token counts and an estimated cost.
-- `ats_scores.job_id` is nullable on purpose: a user can run a generic ATS
-  formatting check before they've picked a job to target.
+  call writes one row here with its token counts and an estimated cost, and
+  `ensure_budget_available` sums this table before every OpenAI call.
+- `ats_scores.job_id` is required in the build (not nullable as originally
+  planned) — a "generic ATS check with no job" mode was never built; every
+  score is always resume-vs-a-specific-job.
 - No `DELETE` on `users`/`resumes` in normal operation — add `deleted_at`
   (soft delete) if you need "remove my account" later; keeps foreign-key
   history intact for `ats_scores`/`interview_sessions` audit trails.
@@ -328,53 +331,54 @@ llm_usage_log                        -- §18 cost governance
 ## 6. API Reference (v1)
 
 All routes prefixed `/api/v1`. Auth via `Authorization: Bearer <access_token>`
-unless marked public.
+unless marked public. Auth/Users/Resumes/Jobs/ATS are **built and verified**;
+Interviews/Chat are **planned (Phase 5)**, not yet implemented.
 
-### Auth (`/auth`)
+### Auth (`/auth`) — built
 
 | Method | Path | Auth | Request | Response |
 | --- | --- | --- | --- | --- |
-| POST | `/auth/register` | public | `{name, email, password}` | `{id, name, email}` |
+| POST | `/auth/register` | public | `{name, email, password}` | `{id, name, email, role, is_active, is_verified}` |
 | POST | `/auth/login` | public | `{email, password}` | `{access_token, refresh_token, token_type}` |
-| POST | `/auth/refresh` | refresh token | `{refresh_token}` | `{access_token, refresh_token}` |
-| POST | `/auth/logout` | bearer | — | `204` (revokes refresh token) |
-| GET | `/auth/me` | bearer | — | `{id, name, email, role}` |
+| POST | `/auth/refresh` | refresh token | `{refresh_token}` | `{access_token, refresh_token}` (old refresh token revoked — rotation) |
+| POST | `/auth/logout` | — | `{refresh_token}` | `204` (revokes that refresh token) |
+| GET | `/auth/me` | bearer | — | `{id, name, email, role, is_active, is_verified}` |
 
-### Users (`/users`)
+### Users (`/users`) — built
 
 | Method | Path | Auth | Notes |
 | --- | --- | --- | --- |
 | GET | `/users/me` | bearer | current profile |
 | PATCH | `/users/me` | bearer | update name/email |
 
-### Resumes (`/resumes`)
+### Resumes (`/resumes`) — built
 
 | Method | Path | Auth | Notes |
 | --- | --- | --- | --- |
-| POST | `/resumes` | bearer | multipart upload; validates size/type; returns `{id, status: "uploaded"}` immediately, enqueues arq parse job |
+| POST | `/resumes` | bearer | multipart upload; validates size/type; parses + embeds **synchronously inline** (arq not built yet, §10) before responding with the final `status` |
 | GET | `/resumes` | bearer | list current user's resumes (paginated) |
-| GET | `/resumes/{id}` | bearer, owner | full parsed record incl. `parsed_data`, `status` |
+| GET | `/resumes/{id}` | bearer, owner | full record incl. `parsed_data`, `status` |
 | DELETE | `/resumes/{id}` | bearer, owner | removes file + DB row + Qdrant point |
-| POST | `/resumes/{id}/reparse` | bearer, owner | re-run parse+embed pipeline |
+| POST | `/resumes/{id}/reparse` | bearer, owner | re-run parse+embed against the already-stored file |
 
-### Jobs (`/jobs`)
-
-| Method | Path | Auth | Notes |
-| --- | --- | --- | --- |
-| POST | `/jobs` | bearer | create job description, enqueue keyword extraction + embedding |
-| GET | `/jobs` | bearer | list |
-| GET | `/jobs/{id}` | bearer | detail |
-| DELETE | `/jobs/{id}` | bearer, owner | — |
-
-### ATS (`/ats`)
+### Jobs (`/jobs`) — built
 
 | Method | Path | Auth | Notes |
 | --- | --- | --- | --- |
-| POST | `/ats/analyze` | bearer | `{resume_id, job_id?}` → runs scoring (sync if cached embeddings, else 202 + poll) |
-| GET | `/ats/{id}` | bearer | one result |
-| GET | `/ats/resume/{resume_id}` | bearer | history of scores for a resume |
+| POST | `/jobs` | bearer | create job description, keyword extraction + embedding run synchronously inline |
+| GET | `/jobs` | bearer | list current user's jobs (paginated) |
+| GET | `/jobs/{id}` | bearer, owner | detail |
+| DELETE | `/jobs/{id}` | bearer, owner | removes DB row + Qdrant point |
 
-### Interviews (`/interviews`)
+### ATS (`/ats`) — built
+
+| Method | Path | Auth | Notes |
+| --- | --- | --- | --- |
+| POST | `/ats/analyze` | bearer | `{resume_id, job_id}` (both required — no-JD generic scoring isn't built) → synchronous: cosine similarity + keyword diff + one `gpt-4o-mini` call, budget-checked via `usage_tracker` first |
+| GET | `/ats/{id}` | bearer, owner | one result |
+| GET | `/ats/resume/{resume_id}` | bearer, owner | history of scores for a resume |
+
+### Interviews (`/interviews`) — planned, Phase 5
 
 | Method | Path | Auth | Notes |
 | --- | --- | --- | --- |
@@ -383,7 +387,7 @@ unless marked public.
 | POST | `/interviews/{session_id}/answer` | bearer | `{question_id, answer}` → stores answer only, **no LLM call here** (feedback is batched, see `/evaluate`) |
 | POST | `/interviews/{session_id}/evaluate` | bearer | **one** LLM call evaluates all answers together → per-question feedback/score + overall summary, marks session `completed` |
 
-### Chat (`/chat`)
+### Chat (`/chat`) — planned, Phase 5
 
 | Method | Path | Auth | Notes |
 | --- | --- | --- | --- |
@@ -408,16 +412,17 @@ Client                FastAPI              Postgres           arq Worker        
   │                      │                    │  status=parsing ◀─│                │              │
   │                      │                    │                   │ extract text    │              │
   │                      │                    │                   │ (pdf/docx)      │              │
-  │                      │                    │                   │ spaCy NER →     │              │
+  │                      │                    │                   │ skill matcher → │              │
   │                      │                    │                   │ parsed_data     │              │
   │                      │                    │  save parsed_data │                │              │
   │                      │                    │  status=parsed ◀──│                │              │
   │                      │                    │                   │ generate embed  │              │
   │                      │                    │                   │───────────────▶│ upsert vector│
-  │                      │                    │  save qdrant_point_id, status=ready◀│              │
+  │                      │                    │  (status stays parsed — no separate │              │
+  │                      │                    │   point-id column, id doubles as it)│              │
   │  GET /resumes/{id}   │                    │                   │                │              │
   │─────────────────────▶│◀───────────────────│                   │                │              │
-  │  {status: ready, parsed_data}              │                   │                │              │
+  │  {status: parsed, parsed_data}             │                   │                │              │
   │◀─────────────────────│                    │                   │                │              │
   │                      │                    │                   │                │              │
   │  POST /ats/analyze {resume_id, job_id}     │                   │                │              │
@@ -434,10 +439,12 @@ Client                FastAPI              Postgres           arq Worker        
 in milliseconds and either polls `GET /resumes/{id}` or (later) receives a
 WebSocket/SSE push when `status` flips to `ready`. This is the reason arq
 exists in this stack — without it, a resume upload request would block for
-however long PDF parsing + NER + embedding generation takes (easily 2–5s,
+however long PDF parsing + embedding generation takes (easily 2–5s,
 worse under load). Note this pipeline is entirely local/free (PyMuPDF,
-spaCy, `sentence-transformers`) — no OpenAI credit is spent until the user
-reaches ATS suggestions, interviews, or chat (§18).
+`fastembed`) — no OpenAI credit is spent until the user
+reaches ATS suggestions, interviews, or chat (§17). As built today (Phase 2),
+this still runs synchronously inline — the arq handoff described here is the
+planned upgrade path, not yet implemented (§3, §16).
 
 ---
 
@@ -452,18 +459,20 @@ reaches ATS suggestions, interviews, or chat (§18).
 4. **Add a job description** (paste text or URL) → `POST /jobs` → keyword
    extraction + embedding runs async.
 5. **Run ATS analysis** → select resume + job → `POST /ats/analyze` → score,
-   missing keywords, formatting issues, and AI suggestions rendered together.
-6. **Improve resume** based on suggestions → re-upload new version →
-   `POST /resumes/{id}/reparse` or a new resume row (`version` bump) → re-run
-   ATS to see score delta.
-7. **Generate interview questions** → pick difficulty → `POST
+   missing keywords, and AI suggestions rendered together. (Formatting-issue
+   analysis was in the original plan but isn't built — no logic exists to
+   populate it, §3.)
+6. **Improve resume** based on suggestions → re-upload as a new resume row →
+   re-run ATS to see score delta. (`/resumes/{id}/reparse` re-runs
+   extraction on the same file; resume *versioning* as a concept isn't built.)
+7. *(Phase 5, not yet built)* **Generate interview questions** → pick difficulty → `POST
    /interviews/generate` (one LLM call, capped at 5 questions) → practice
    screen shows one question at a time, chat-bubble style → user answers →
    `POST /interviews/{id}/answer` stores it with **no feedback shown yet**
-   (deliberate — see §18) → after the last question, `POST
+   (deliberate — see §17) → after the last question, `POST
    /interviews/{id}/evaluate` (one LLM call for the whole session) → overall
    score + per-question feedback shown together, like a debrief.
-8. **Chat with the AI career assistant** → open a chat session anchored to a
+8. *(Phase 5, not yet built)* **Chat with the AI career assistant** → open a chat session anchored to a
    resume → ask broad career questions — *"what roles fit my skills?"*,
    *"how do I explain this gap?"*, *"should I learn X or Y next?"* — not just
    resume line-edits. Each call sends a compact resume summary (not the full
@@ -471,7 +480,7 @@ reaches ATS suggestions, interviews, or chat (§18).
    personalized without every message growing more expensive than the last.
 9. **(Phase 6) Notifications** — weekly email: "3 new jobs match your latest
    resume", "your ATS score dropped since you added this JD".
-10. Throughout 5/7/8, `usage_tracker` (§18) is silently logging estimated
+10. Throughout 5/7/8, `usage_tracker` (§17) is silently logging estimated
     spend against the $5 demo budget; if it's ever close to exhausted the
     user sees a plain "demo budget reached" message instead of a broken call.
 
@@ -504,22 +513,30 @@ reaches ATS suggestions, interviews, or chat (§18).
 
 ---
 
-## 10. Background Jobs (arq)
+## 10. Background Jobs (arq) — planned design, not yet implemented
+
+**Status:** everything below describes the intended shape once arq is
+introduced. As of Phase 4, resume parsing and job keyword/embedding both
+still run **synchronously inline** in the request (`ResumeService._process`,
+`JobService._process`) — no Redis, no arq worker exists in the stack yet.
+This table is the target to move toward if/when that stops being fast enough
+(§3, §16 Phase 2 note).
 
 | Task | Trigger | Does |
 | --- | --- | --- |
-| `parse_resume(resume_id)` | on upload | extract text → spaCy NER → save `parsed_data`, set `status=parsed` |
-| `embed_resume(resume_id)` | after parse | local `sentence-transformers` embedding → upsert to Qdrant → save `qdrant_point_id`, `status=ready` |
+| `parse_resume(resume_id)` | on upload | extract text → skill/keyword matcher → save `parsed_data`, set `status=parsed` |
+| `embed_resume(resume_id)` | after parse | `fastembed` embedding → upsert to Qdrant (point id = `resume.id`), `status=parsed` |
 | `embed_job(job_id)` | on job creation | keyword extraction + local embedding |
 | `generate_interview_questions(session_id)` | on interview generate | **one** LLM call, bulk-insert `interview_questions` |
 | `evaluate_interview(session_id)` | on evaluate | **one** LLM call scores all answers together |
 | `send_weekly_report(user_id)` | scheduled via arq `cron_jobs` (no separate beat process needed) | Phase 6 — email digest |
 
-All tasks are idempotent (safe to retry) and update the row's `status` field
-so the API layer never needs to know arq exists — it just reads state. Any
-task that calls the OpenAI adapter (`generate_interview_questions`,
-`evaluate_interview`, plus the sync-path `ats_service`/`chat_service` calls)
-writes one row to `llm_usage_log` on completion (§18).
+Once built, all tasks should be idempotent (safe to retry) and update the
+row's `status` field so the API layer never needs to know arq exists — it
+just reads state. Any task that calls the OpenAI adapter
+(`generate_interview_questions`, `evaluate_interview`, plus the already-built
+sync-path `ats_service` call) writes one row to `llm_usage_log` on completion
+(§17).
 
 ---
 
@@ -603,8 +620,12 @@ Production:
 
 ## 15. Migration Path — Current Code → This Architecture
 
-What exists today (verified by reading the actual files, not just the old
-roadmap) and the concrete change needed for each:
+**Status: RESOLVED.** This was the state of the codebase at the very start of
+Phase 1, before any of this architecture was built — kept here as a
+historical record of what got cleaned up, not a live task list.
+
+What existed at the start (verified by reading the actual files, not just the
+old roadmap) and the concrete change made for each:
 
 | Current state | Change needed |
 | --- | --- |
@@ -629,30 +650,65 @@ Sequenced so each phase is independently shippable/testable before the next
 begins — this is what "complete quickly" means in practice: no phase should
 block on infrastructure the next phase hasn't justified yet.
 
-### Phase 1 — Foundation & Auth
-- Fix the DB duplication (§15), add Alembic, run initial migration.
-- Add `hashed_password`/`role`/timestamps to `User`.
-- Implement `core/security.py`, `auth_service.py`, `/auth/*` endpoints, `get_current_user` dependency.
-- Add `core/exceptions.py` + global error handler.
+### Phase 1 — Foundation & Auth ✅ built & verified
+- Fixed the DB duplication (§15), added Alembic, ran initial migration.
+- Added `hashed_password`/`role`/timestamps to `User`, UUID PKs throughout.
+- Built `core/security.py` (bcrypt via the raw `bcrypt` library, not `passlib`
+  — `passlib` 1.7.4 is unmaintained and broke against current `bcrypt`'s
+  stricter 72-byte handling; swapped to calling `bcrypt` directly, same
+  `hash_password`/`verify_password` call sites, zero blast radius elsewhere),
+  `auth_service.py`, `/auth/register|login|refresh|logout|me`,
+  `get_current_user` (via `HTTPBearer`, not `OAuth2PasswordBearer` — the
+  latter renders a mismatched OAuth2-password-grant form in Swagger's
+  Authorize modal instead of a plain bearer-token field).
+- Refresh tokens: random opaque string, hashed (SHA-256) at rest, rotated on
+  every use.
+- Added `core/exceptions.py` (`AppError` hierarchy) + global error handler,
+  plus a `ResponseMiddleware` (not originally planned) that wraps every
+  successful JSON response as `{"success", "message", "data"}`.
+- Verified end-to-end: register → login → protected routes → refresh
+  rotation → logout revocation → duplicate-email conflict → invalid-token
+  rejection, all returning clean, consistent JSON.
 
-### Phase 2 — Resume Pipeline (sync first, async once it's slow)
-- Fix upload path (server-generated filename), persist `Resume` rows via `resume_repository.py`.
-- Add `python-docx` support alongside PyMuPDF.
-- Add spaCy-based `parsing_service.py` → populate `parsed_data`.
-- Introduce arq + Redis **at this point** (this is where synchronous processing first becomes noticeably slow) and move parsing into `resume_tasks.py`.
+### Phase 2 — Resume Pipeline ✅ built & verified (still fully synchronous)
+- Fixed upload path (server-generated random filename, not client-supplied),
+  persists `Resume` rows via `resume_repository.py`.
+- `python-docx` added alongside PyMuPDF.
+- `parsing_service.py` extracts email/phone via regex + skills via a curated
+  word-list matcher (`services/keyword_service.py`) — **not spaCy yet** (§3).
+- Empty-extraction guard: if a PDF/DOCX yields no text (e.g. a scanned
+  image), the resume is marked `status: failed` instead of silently
+  "succeeding" with empty data.
+- arq/Redis **not introduced** — processing has stayed fast enough
+  synchronously that the doc's own trigger condition ("once it's slow") has
+  never fired. Revisit if this changes.
 
-### Phase 3 — Embeddings & Semantic Search
-- Add Qdrant to `docker-compose.yml`.
-- `embedding_service.py` using local `sentence-transformers` (§3, §18 — zero API cost), `embed_resume`/`embed_job` tasks.
-- `jobs.py` endpoints + job keyword extraction.
+### Phase 3 — Embeddings & Semantic Search ✅ built & verified
+- Qdrant added to `docker-compose.yml`, two collections (`resumes`, `jobs`).
+- `embedding_service.py` using `fastembed` (swapped from the originally
+  planned `sentence-transformers` — §3), local model cache persisted via
+  bind mount.
+- `jobs.py` endpoints (create/list/get/delete) + keyword extraction reusing
+  the same curated skill-list matcher as resumes.
+- Verified with a real semantic-search test: a matching job scored `0.793`
+  cosine similarity against a test resume, an unrelated job scored `0.433` —
+  confirmed the embeddings are semantically meaningful, not just present.
 
-### Phase 4 — ATS Engine
-- `ats_service.py`: cosine similarity (resume vector vs job vector) + keyword diff + LLM-generated suggestions (one `gpt-4o-mini` call per `/ats/analyze`).
-- `LLMProvider` interface + the OpenAI adapter only — no Gemini/Anthropic adapters for now (§18 keeps this to one paid provider to make the $5 credit predictable).
-- `/ats/*` endpoints + `usage_tracker` wired into this call site first (it's the first place the app spends OpenAI credit).
+### Phase 4 — ATS Engine ✅ built & verified
+- `ats_service.py`: blended score = `0.6 × cosine_similarity + 0.4 ×
+  keyword_coverage` (falls back to pure similarity if a job has zero
+  extracted keywords, rather than fabricating 100% coverage — an early bug
+  where the empty-keywords fallback defaulted to `1.0` and silently inflated
+  scores was caught and fixed via this exact test case).
+- `LLMProvider` interface + the OpenAI adapter only (`gpt-4o-mini`) — no
+  Gemini/Anthropic adapters, per §17.
+- `usage_tracker.py` + `llm_usage_log` wired in at this first real spend
+  point: `ensure_budget_available` runs before every OpenAI call.
+- `/ats/analyze|{id}|resume/{resume_id}` endpoints, ownership-checked through
+  both the resume and the job.
 
-### Phase 5 — Interviews & Chat
-- `interview_service.py` + `/interviews/*` — question generation and evaluation each as a single batched LLM call (§18), never per-question.
+### Phase 5 — Interviews & Chat — next up
+- `interview_service.py` + `/interviews/*` — question generation and evaluation each as a single batched LLM call (§17), never per-question.
 - `chat_service.py` + `/chat/*`, resume-context-aware system prompt built from a compact resume summary + trimmed message history, not raw resume text or full history.
 - `usage_tracker` guard applied to both.
 
@@ -675,7 +731,7 @@ afterthought — collected here in one place:
 
 | Decision | Cost impact |
 | --- | --- |
-| Embeddings run locally via `sentence-transformers`, not OpenAI | Resume/job embedding — potentially the highest-*volume* call in the app — costs **$0**, leaving the entire credit for chat + interview generation/evaluation. |
+| Embeddings run locally via `fastembed`, not OpenAI | Resume/job embedding — potentially the highest-*volume* call in the app — costs **$0**, leaving the entire credit for chat + interview generation/evaluation. |
 | Model default is `gpt-4o-mini` everywhere | The cheapest OpenAI chat-capable model; a few cents covers dozens of interview sessions and chat conversations. |
 | Interview questions generated in **one** call, evaluated in **one** call | Bounds an interview session to exactly 2 LLM calls regardless of question count — 5 questions costs the same as 10. Per-answer feedback would have made cost scale with question count instead. |
 | Chat sends a compact resume summary + last ~8 messages, not full resume text + full history | Keeps every chat turn a small, flat-cost request instead of one that grows more expensive as a conversation gets longer. |

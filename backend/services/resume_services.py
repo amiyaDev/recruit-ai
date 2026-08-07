@@ -11,8 +11,8 @@ from services.parsing_service import parse_resume_text
 from utils.docx_extractor import extract_text_from_docx
 from utils.pdf_extractor import extract_text_from_pdf
 from services.embedding_service import delete_vector, upsert_vector
+from core.constants import RESUMES_COLLECTION
 
-RESUMES_COLLECTION = "resumes"
 UPLOAD_DIR = Path("uploads/resumes")
 
 

@@ -25,3 +25,7 @@ class ValidationError(AppError):
 class ConflictError(AppError):
     status_code = 409
     code = "conflict"
+
+class BudgetExceededError(AppError):
+    status_code = 503
+    code = "budget_exceeded"
