@@ -9,8 +9,7 @@ from repositories.job_repository import JobRepository
 from schemas.job_schemas import JobCreate
 from services.embedding_service import delete_vector, upsert_vector
 from services.keyward_service import extract_skills
-
-JOBS_COLLECTION = "jobs"
+from core.constants import JOBS_COLLECTION
 
 
 class JobService:
