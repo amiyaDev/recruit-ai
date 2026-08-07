@@ -8,6 +8,7 @@ from alembic import context
 from models.user import User  # noqa: F401
 from models.refresh_token import RefreshToken  # noqa: F401
 from models.resumes import Resume  # noqa: F401
+from models.job import Job  # noqa: F401
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

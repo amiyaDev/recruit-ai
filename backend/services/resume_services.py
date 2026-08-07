@@ -10,7 +10,9 @@ from repositories.resume_repository import ResumeRepository
 from services.parsing_service import parse_resume_text
 from utils.docx_extractor import extract_text_from_docx
 from utils.pdf_extractor import extract_text_from_pdf
+from services.embedding_service import delete_vector, upsert_vector
 
+RESUMES_COLLECTION = "resumes"
 UPLOAD_DIR = Path("uploads/resumes")
 
 
@@ -61,7 +63,12 @@ class ResumeService:
                 raise ValueError("No extractable text found — likely a scanned/image-based file")
 
             parsed_data = parse_resume_text(text)
-
+            upsert_vector(
+                RESUMES_COLLECTION,
+                resume.id,
+                text,
+                payload={"resume_id": str(resume.id), "user_id": str(resume.user_id)},
+            )
             return ResumeRepository.update(
                 db,
                 resume,
@@ -84,6 +91,7 @@ class ResumeService:
     @staticmethod
     def delete(db: Session, user_id: uuid.UUID, resume_id: uuid.UUID) -> None:
         resume = ResumeService.get_owned(db, user_id, resume_id)
+        delete_vector(RESUMES_COLLECTION, resume.id)
         file_path = Path(resume.file_path)
         if file_path.exists():
             file_path.unlink()
