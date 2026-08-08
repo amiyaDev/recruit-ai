@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RecruitAI - AI Career Chat</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Montserrat:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#dad7ff",
+                        "surface-bright": "#faf8ff",
+                        "on-surface-variant": "#464555",
+                        "primary": "#3525cd",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#00201c",
+                        "tertiary-fixed": "#71f8e4",
+                        "on-tertiary-container": "#69f1de",
+                        "tertiary-container": "#006d62",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "outline": "#777587",
+                        "surface-container": "#eaedff",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-variant": "#dae2fd",
+                        "outline-variant": "#c7c4d8",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#89ceff",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#4f46e5",
+                        "tertiary-fixed-dim": "#4fdbc8",
+                        "inverse-surface": "#283044",
+                        "background": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#4d44e3",
+                        "primary-fixed": "#e2dfff",
+                        "on-background": "#131b2e",
+                        "on-primary-fixed": "#0f0069",
+                        "surface-dim": "#d2d9f4",
+                        "tertiary": "#00534a",
+                        "on-secondary-fixed-variant": "#004c6e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#004666",
+                        "secondary-fixed": "#c9e6ff",
+                        "surface-container-highest": "#dae2fd",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "surface": "#faf8ff",
+                        "inverse-primary": "#c3c0ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f2f3ff",
+                        "secondary-container": "#39b8fd",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#005048",
+                        "on-secondary-fixed": "#001e2f",
+                        "surface-container-high": "#e2e7ff",
+                        "on-surface": "#131b2e",
+                        "secondary": "#006591"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "base": "4px",
+                        "stack-sm": "8px",
+                        "section-gap": "80px",
+                        "container-margin": "24px",
+                        "stack-lg": "32px",
+                        "gutter": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Montserrat"],
+                        "headline-lg": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Montserrat"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom Animations */
+        @keyframes popIn {
+            0% { transform: scale(0.95) translateY(10px); opacity: 0; }
+            60% { transform: scale(1.02) translateY(-2px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .animate-pop-in {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .dark .glass-panel {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .bg-glow {
+            background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at bottom right, rgba(0, 201, 167, 0.1) 0%, transparent 40%);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background dark:bg-[#0f111a] text-on-surface dark:text-inverse-on-surface bg-glow min-h-screen flex overflow-hidden font-body-md">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col py-stack-lg gap-stack-md glass-panel h-screen w-64 fixed left-0 top-0 z-40 shadow-2xl">
+<!-- Header -->
+<div class="px-container-margin mb-stack-lg relative overflow-hidden">
+<div class="flex items-center gap-3 relative z-10">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-teal-400 flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.4)]">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-extrabold tracking-tight text-indigo-400 dark:text-indigo-300">RecruitAI</h1>
+<p class="font-label-sm text-label-sm text-outline-variant">AI Talent Suite</p>
+</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col gap-2 px-stack-sm">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-white/5 dark:hover:bg-white/5 hover:translate-x-1 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:text-indigo-400 transition-colors" data-icon="home">home</span>
+<span class="font-body-md text-body-md group-hover:text-white transition-colors">Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-white/5 dark:hover:bg-white/5 hover:translate-x-1 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:text-indigo-400 transition-colors" data-icon="description">description</span>
+<span class="font-body-md text-body-md group-hover:text-white transition-colors">Applications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-white/5 dark:hover:bg-white/5 hover:translate-x-1 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:text-indigo-400 transition-colors" data-icon="psychology">psychology</span>
+<span class="font-body-md text-body-md group-hover:text-white transition-colors">Skill Lab</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500/20 to-teal-400/10 text-indigo-400 dark:text-indigo-300 border border-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.15)] hover:translate-x-1 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-teal-400" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-body-md text-body-md font-semibold text-white">AI Match</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-white/5 dark:hover:bg-white/5 hover:translate-x-1 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:text-indigo-400 transition-colors" data-icon="alt_route">alt_route</span>
+<span class="font-body-md text-body-md group-hover:text-white transition-colors">Career Path</span>
+</a>
+</div>
+<!-- Footer Links & CTA -->
+<div class="px-stack-sm mt-auto flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-white/5 dark:hover:bg-white/5 hover:translate-x-1 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:text-indigo-400 transition-colors" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md group-hover:text-white transition-colors">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:bg-white/5 dark:hover:bg-white/5 hover:translate-x-1 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:text-indigo-400 transition-colors" data-icon="help">help</span>
+<span class="font-body-md text-body-md group-hover:text-white transition-colors">Support</span>
+</a>
+<div class="px-4 pt-4 mt-2 border-t border-white/5">
+<button class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-teal-400 text-white font-label-sm text-label-sm tracking-wide shadow-[0_4px_20px_rgba(79,70,229,0.4)] hover:scale-[1.02] hover:shadow-[0_6px_25px_rgba(79,70,229,0.5)] transition-all duration-300 relative overflow-hidden group">
+<div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+<span class="relative z-10">UPGRADE TO PRO</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col md:ml-64 relative h-screen w-full bg-[url('{{DATA:ANIMATION:ANIMATION_1}}')] bg-cover bg-center bg-no-repeat before:absolute before:inset-0 before:bg-[#0f111a]/90 before:z-0">
+<!-- Header / Context Chip -->
+<header class="h-20 flex items-center justify-center px-container-margin shrink-0 relative z-10 border-b border-white/5 glass-panel !rounded-none !border-x-0 !border-t-0">
+<div class="inline-flex items-center gap-2 px-5 py-2 rounded-full glass-panel shadow-[0_0_20px_rgba(79,70,229,0.15)] animate-float">
+<span class="material-symbols-outlined text-teal-400 text-[18px]">document_scanner</span>
+<span class="font-label-sm text-label-sm text-indigo-300 tracking-wide">Chatting about: Senior Dev Resume</span>
+<div class="w-2 h-2 rounded-full bg-teal-400 animate-pulse ml-2 shadow-[0_0_10px_rgba(45,212,191,0.8)]"></div>
+</div>
+</header>
+<!-- Chat Feed Area -->
+<div class="flex-1 overflow-y-auto px-container-margin md:px-[10%] py-stack-lg flex flex-col gap-stack-lg scroll-smooth relative z-10" id="chat-feed">
+<!-- System/AI Message -->
+<div class="flex items-start gap-4 animate-pop-in" style="animation-delay: 0.1s;">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-teal-400/20 border border-indigo-500/30 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(79,70,229,0.2)]">
+<span class="material-symbols-outlined text-[20px] text-teal-400" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="glass-panel p-5 rounded-2xl rounded-tl-sm max-w-[85%] lg:max-w-[70%] shadow-lg relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-teal-400/5 z-0"></div>
+<p class="font-body-md text-body-md text-inverse-on-surface relative z-10 leading-relaxed">Hello! I've analyzed the Senior Dev Resume you uploaded. It looks solid, especially the experience with scalable microservices. How can I help you tailor it further? We could focus on leadership metrics or specific tech stacks.</p>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex items-start justify-end gap-4 animate-pop-in" style="animation-delay: 0.3s;">
+<div class="bg-gradient-to-r from-indigo-600 to-indigo-500 p-5 rounded-2xl rounded-tr-sm max-w-[85%] lg:max-w-[70%] shadow-[0_10px_30px_rgba(79,70,229,0.3)] border border-indigo-400/30">
+<p class="font-body-md text-body-md text-white leading-relaxed">Let's highlight the leadership metrics. I managed a team of 5 engineers but it doesn't stand out enough in the current bullet points.</p>
+</div>
+<div class="w-10 h-10 rounded-xl overflow-hidden border border-indigo-400/50 shrink-0 shadow-[0_0_15px_rgba(79,70,229,0.3)]">
+<img class="w-full h-full object-cover" data-alt="A small circular avatar of a professional user in a modern tech setting, dark mode aesthetic with subtle purple lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTJgpEYHLOy92uPYy_PFi5wdDHJgx-q2bFfCYdUExe1FEnulYUuMzvG1EfJSFyl_T3-e4AGsbh3qCa1g4wOFItf9F4aVI4BwdshXQ02Xc09MIfl9R2D_1FWDLVdjLYSojE0q8gmGp58ZvTCC3NG6-LbCLMVaYK1wr56xPDbdnG_VViqCLk_yFT4AEEG7ythvSpAJIGSvRs7UYw6ERjbKXIq6sjyILkKEJ72LavPtV6ZUTT8mzb-_kI"/>
+</div>
+</div>
+<!-- AI Message with Chip Suggestions -->
+<div class="flex items-start gap-4 animate-pop-in" style="animation-delay: 0.8s;">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-teal-400/20 border border-indigo-500/30 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(79,70,229,0.2)]">
+<span class="material-symbols-outlined text-[20px] text-teal-400" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="flex flex-col gap-3 max-w-[85%] lg:max-w-[70%] animate-float" style="animation-delay: 1s;">
+<div class="glass-panel p-5 rounded-2xl rounded-tl-sm shadow-lg relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-teal-400/5 z-0"></div>
+<p class="font-body-md text-body-md text-inverse-on-surface mb-4 relative z-10 leading-relaxed">Great idea. Quantifying leadership impact is crucial for Senior roles. Here are a few ways we could rephrase that section. Which direction feels more accurate to your experience?</p>
+<div class="flex flex-wrap gap-2 mt-2 relative z-10">
+<button class="px-4 py-2 rounded-xl glass-panel hover:bg-indigo-500/20 hover:border-indigo-400/50 hover:shadow-[0_0_15px_rgba(79,70,229,0.2)] transition-all duration-300 font-label-sm text-label-sm text-indigo-300 tracking-wide">
+                                Focus on Team Velocity
+                            </button>
+<button class="px-4 py-2 rounded-xl glass-panel hover:bg-indigo-500/20 hover:border-indigo-400/50 hover:shadow-[0_0_15px_rgba(79,70,229,0.2)] transition-all duration-300 font-label-sm text-label-sm text-indigo-300 tracking-wide">
+                                Focus on Mentorship
+                            </button>
+<button class="px-4 py-2 rounded-xl glass-panel hover:bg-indigo-500/20 hover:border-indigo-400/50 hover:shadow-[0_0_15px_rgba(79,70,229,0.2)] transition-all duration-300 font-label-sm text-label-sm text-indigo-300 tracking-wide">
+                                Focus on Project Delivery
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex items-start justify-end gap-4 animate-pop-in" style="animation-delay: 1.5s;">
+<div class="bg-gradient-to-r from-indigo-600 to-indigo-500 p-5 rounded-2xl rounded-tr-sm max-w-[85%] lg:max-w-[70%] shadow-[0_10px_30px_rgba(79,70,229,0.3)] border border-indigo-400/30">
+<p class="font-body-md text-body-md text-white leading-relaxed">Focus on Team Velocity. We increased deployment frequency by 40%.</p>
+</div>
+<div class="w-10 h-10 rounded-xl overflow-hidden border border-indigo-400/50 shrink-0 shadow-[0_0_15px_rgba(79,70,229,0.3)]">
+<img class="w-full h-full object-cover" data-alt="A small circular avatar of a professional user in a modern tech setting, dark mode aesthetic with subtle purple lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUQP1CISDC2mfSg5fHfFnB6dqWGSlDGKoJV6R2T_nMEOHXoWUNg2KmkvPsCYQdmlZ_w7WfxpdWlHLMm903TN3AwPadYyDkjEm0M4ssxgZ6lZBd301FespV_mfNOAr4U5FDudsHZcWNuyPNGtzNYthXFyv7HKqX-MJImzEd4K2P0eNlxyydTbt6hSH0UHDFJSNG1uAtBUglhsxCI75YZJRTDcJVTzS10jgbZwRLz9FcHiHQS22FI-Qn"/>
+</div>
+</div>
+<!-- AI Message - Generating state -->
+<div class="flex items-start gap-4 animate-pop-in" style="animation-delay: 1.8s;">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-teal-400/20 border border-indigo-500/30 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(79,70,229,0.2)]">
+<span class="material-symbols-outlined text-[20px] text-teal-400 animate-spin" style="font-variation-settings: 'FILL' 1;">sync</span>
+</div>
+<div class="glass-panel px-5 py-4 rounded-2xl rounded-tl-sm flex items-center gap-3 shadow-lg">
+<div class="w-2 h-2 rounded-full bg-teal-400 animate-bounce shadow-[0_0_8px_rgba(45,212,191,0.6)]" style="animation-delay: 0s;"></div>
+<div class="w-2 h-2 rounded-full bg-indigo-400 animate-bounce shadow-[0_0_8px_rgba(99,102,241,0.6)]" style="animation-delay: 0.2s;"></div>
+<div class="w-2 h-2 rounded-full bg-teal-400 animate-bounce shadow-[0_0_8px_rgba(45,212,191,0.6)]" style="animation-delay: 0.4s;"></div>
+</div>
+</div>
+<!-- Spacer -->
+<div class="h-10 shrink-0"></div>
+</div>
+<!-- Input Area -->
+<div class="shrink-0 p-container-margin glass-panel z-20 !rounded-none !border-x-0 !border-b-0 relative">
+<div class="absolute inset-0 bg-gradient-to-t from-[#0f111a] to-transparent z-[-1]"></div>
+<div class="max-w-4xl mx-auto relative group">
+<div class="absolute inset-0 bg-indigo-500/20 blur-xl rounded-2xl group-focus-within:bg-indigo-500/40 transition-colors duration-500"></div>
+<div class="relative flex items-center glass-panel rounded-2xl focus-within:border-indigo-500/50 focus-within:shadow-[0_0_25px_rgba(79,70,229,0.25)] transition-all duration-300 pr-2 pl-6 py-2 overflow-hidden">
+<div class="absolute inset-0 bg-[#0f111a]/60 z-0"></div>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-white font-body-md text-body-md placeholder-outline-variant py-4 outline-none relative z-10" id="chat-input" placeholder="Type your message or ask for suggestions..." type="text"/>
+<button class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-teal-400 flex items-center justify-center shadow-[0_0_15px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95 transition-transform shrink-0 relative z-10 group-focus-within:animate-pulse">
+<span class="material-symbols-outlined text-white pl-1" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const feed = document.getElementById('chat-feed');
+            feed.scrollTop = feed.scrollHeight;
+        });
+    </script>
+</body></html>

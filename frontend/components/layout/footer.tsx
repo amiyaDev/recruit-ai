@@ -1,20 +1,17 @@
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
+import { BrandLogo } from "@/components/layout/brand-logo";
 import { FOOTER_LINKS } from "@/constants/landing-content";
 
 export function Footer() {
   return (
     <ScrollReveal
       as="footer"
-      className="w-full py-16 bg-surface-container-lowest dark:bg-[#070a11] border-t border-outline-variant/30 dark:border-white/10"
+      className="w-full py-16 bg-surface-container-lowest dark:bg-background border-t border-outline-variant/30 dark:border-border"
     >
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-8 max-w-7xl mx-auto">
         <div className="col-span-2 md:col-span-1 space-y-6">
           <a className="flex items-center gap-2 group" href="#">
-            <img
-              alt="RecruitAI logo"
-              className="w-8 h-8 object-contain rounded-md"
-              src="https://lh3.googleusercontent.com/aida/AP1WRLusUdBP0fC9M-p_pfveggZ8O2uPIlnKUHejtnsT8RxoVDMc1yfNJQwcty5AUpTetzl2AXjS5UONEEv-kcwwH7DMMc2ONSo5gTS9exIc2RIGNc7YSedeRQjjqw7vfStZeH9xmRdxepqI8zXHYmI1SJ2iRKjh-U65-ufsjKaLwHRgyRvmAHPLoE4SKVhfYNb4SluXpTUjO3_0CYX5xBzC1U0rh2l_M2KH2OhFw17kHcBJYtcJY53yWIXRq9k"
-            />
+            <BrandLogo className="w-8 h-8" />
             <span className="font-headline-md text-lg font-bold text-foreground">RecruitAI</span>
           </a>
           <p className="font-body-md text-sm text-muted-foreground max-w-xs leading-relaxed">

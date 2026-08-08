@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RecruitAI - Resume Upload &amp; Analysis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#dad7ff",
+                        "outline": "#777587",
+                        "primary": "#3525cd",
+                        "primary-fixed": "#e2dfff",
+                        "secondary-fixed": "#c9e6ff",
+                        "tertiary-fixed-dim": "#4fdbc8",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary-container": "#39b8fd",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#dae2fd",
+                        "tertiary-container": "#006d62",
+                        "surface-container-low": "#f2f3ff",
+                        "inverse-on-surface": "#eef0ff",
+                        "inverse-primary": "#c3c0ff",
+                        "tertiary": "#00534a",
+                        "primary-container": "#4f46e5",
+                        "on-secondary-fixed": "#001e2f",
+                        "on-secondary-container": "#004666",
+                        "background": "#faf8ff",
+                        "on-error": "#ffffff",
+                        "secondary": "#006591",
+                        "secondary-fixed-dim": "#89ceff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#71f8e4",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#dae2fd",
+                        "on-surface-variant": "#464555",
+                        "on-secondary-fixed-variant": "#004c6e",
+                        "on-tertiary-fixed": "#00201c",
+                        "on-tertiary-fixed-variant": "#005048",
+                        "on-surface": "#131b2e",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "surface": "#faf8ff",
+                        "inverse-surface": "#283044",
+                        "on-tertiary-container": "#69f1de",
+                        "surface-bright": "#faf8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#131b2e",
+                        "surface-container": "#eaedff",
+                        "surface-tint": "#4d44e3",
+                        "outline-variant": "#c7c4d8",
+                        "on-primary-fixed": "#0f0069",
+                        "surface-dim": "#d2d9f4",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin": "24px",
+                        "base": "4px",
+                        "gutter": "20px",
+                        "stack-sm": "8px",
+                        "section-gap": "80px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "headline-md": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    },
+                    "backgroundImage": {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    },
+                    "keyframes": {
+                        shimmer: {
+                            '100%': { transform: 'translateX(100%)' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.5, transform: 'scale(1)' },
+                            '50%': { opacity: 1, transform: 'scale(1.05)' }
+                        },
+                        gradientMove: {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                            '100%': { backgroundPosition: '0% 50%' }
+                        }
+                    },
+                    "animation": {
+                        'shimmer': 'shimmer 2s infinite',
+                        'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+                        'gradient-move': 'gradientMove 3s ease infinite'
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@600;700;800&display=swap');
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark .glass-card {
+            background: rgba(40, 48, 68, 0.4);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .shimmer-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .shimmer-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0,
+                rgba(255, 255, 255, 0.1) 20%,
+                rgba(255, 255, 255, 0.2) 60%,
+                rgba(255, 255, 255, 0)
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        .dashed-gradient-border {
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(113, 248, 228, 0.5) 10px, rgba(113, 248, 228, 0.5) 20px), repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(113, 248, 228, 0.5) 10px, rgba(113, 248, 228, 0.5) 20px), repeating-linear-gradient(180deg, transparent, transparent 10px, rgba(113, 248, 228, 0.5) 10px, rgba(113, 248, 228, 0.5) 20px), repeating-linear-gradient(270deg, transparent, transparent 10px, rgba(113, 248, 228, 0.5) 10px, rgba(113, 248, 228, 0.5) 20px);
+            background-size: 2px 100%, 100% 2px, 2px 100%, 100% 2px;
+            background-position: 0 0, 0 0, 100% 0, 0 100%;
+            background-repeat: no-repeat;
+        }
+        .group:hover .dashed-gradient-border {
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(195, 192, 255, 1) 10px, rgba(195, 192, 255, 1) 20px), repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(195, 192, 255, 1) 10px, rgba(195, 192, 255, 1) 20px), repeating-linear-gradient(180deg, transparent, transparent 10px, rgba(195, 192, 255, 1) 10px, rgba(195, 192, 255, 1) 20px), repeating-linear-gradient(270deg, transparent, transparent 10px, rgba(195, 192, 255, 1) 10px, rgba(195, 192, 255, 1) 20px);
+        }
+    </style>
+</head>
+<body class="bg-background dark:bg-[#0f172a] text-on-surface dark:text-surface-bright min-h-screen font-body-md overflow-x-hidden relative">
+<!-- Radial Glow Backgrounds -->
+<div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
+<div class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary/20 blur-[120px] mix-blend-screen animate-pulse-glow" style="animation-duration: 8s;"></div>
+<div class="absolute top-[40%] -right-[10%] w-[40vw] h-[40vw] rounded-full bg-tertiary-fixed-dim/10 blur-[100px] mix-blend-screen animate-pulse-glow" style="animation-duration: 12s;"></div>
+</div>
+<!-- SideNavBar Container -->
+<aside class="bg-surface-container-low/40 backdrop-blur-xl dark:bg-inverse-surface/40 h-screen w-64 fixed left-0 top-0 z-40 border-r border-white/5 shadow-lg flex flex-col py-stack-lg gap-stack-md hidden md:flex">
+<!-- Header -->
+<div class="px-stack-md mb-stack-md">
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed">RecruitAI</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-base">AI Talent Suite</p>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 flex flex-col gap-base mt-stack-md">
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm text-on-surface-variant dark:text-outline hover:bg-surface-variant/50 hover:translate-x-1 transition-all duration-300 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+                Home
+            </a>
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm bg-primary/10 text-primary dark:text-primary-fixed-dim border-r-4 border-primary hover:translate-x-1 transition-all duration-300 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">description</span>
+                Applications
+            </a>
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm text-on-surface-variant dark:text-outline hover:bg-surface-variant/50 hover:translate-x-1 transition-all duration-300 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">psychology</span>
+                Skill Lab
+            </a>
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm text-on-surface-variant dark:text-outline hover:bg-surface-variant/50 hover:translate-x-1 transition-all duration-300 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                AI Match
+            </a>
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm text-on-surface-variant dark:text-outline hover:bg-surface-variant/50 hover:translate-x-1 transition-all duration-300 font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">alt_route</span>
+                Career Path
+            </a>
+</nav>
+<!-- CTA & Footer -->
+<div class="px-stack-md flex flex-col gap-stack-md mt-auto">
+<button class="w-full py-stack-sm rounded-lg bg-gradient-to-r from-primary to-secondary text-on-primary font-label-sm text-label-sm shadow-[0_4px_12px_rgba(79,70,229,0.3)] hover:scale-105 transition-transform duration-200">
+                Upgrade to Pro
+            </button>
+<div class="flex flex-col gap-base pt-stack-sm border-t border-white/10">
+<a class="flex items-center gap-stack-sm px-stack-sm py-stack-sm text-on-surface-variant dark:text-outline hover:bg-surface-variant/50 transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+<a class="flex items-center gap-stack-sm px-stack-sm py-stack-sm text-on-surface-variant dark:text-outline hover:bg-surface-variant/50 transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">help</span>
+                    Support
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 p-container-margin md:p-section-gap min-h-screen flex flex-col max-w-7xl mx-auto z-10 relative">
+<header class="mb-stack-lg">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface dark:text-white">Upload Resume</h2>
+<p class="font-body-md text-body-md text-outline dark:text-outline-variant mt-base">Drop a resume to let our AI engine parse skills, experience, and match potential.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Upload Zone & Status -->
+<div class="lg:col-span-7 flex flex-col gap-stack-lg">
+<!-- Upload Dropzone -->
+<div class="relative group cursor-pointer h-80 rounded-xl flex flex-col items-center justify-center p-stack-lg transition-all duration-300 bg-surface/50 dark:bg-[#1a233a]/50" id="dropzone">
+<!-- Dashed Gradient Border Wrapper -->
+<div class="absolute inset-0 rounded-xl dashed-gradient-border opacity-70 group-hover:opacity-100 transition-opacity"></div>
+<!-- Dropzone Content -->
+<div class="relative z-10 flex flex-col items-center text-center space-y-stack-md pointer-events-none">
+<div class="w-24 h-24 rounded-full bg-gradient-to-br from-fuchsia-500/20 to-cyan-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 ease-out shadow-[0_0_30px_rgba(217,70,239,0.3)]">
+<span class="material-symbols-outlined text-[48px] text-fuchsia-400 drop-shadow-[0_0_15px_rgba(217,70,239,0.8)] animate-pulse-glow">auto_awesome</span>
+</div>
+<div>
+<p class="font-headline-md text-headline-md text-on-surface dark:text-white">Drag &amp; Drop Resume</p>
+<p class="font-body-md text-body-md text-outline dark:text-outline-variant mt-2">or <span class="text-primary dark:text-tertiary-fixed-dim underline underline-offset-4 cursor-pointer pointer-events-auto hover:text-fuchsia-400 transition-colors">browse files</span> (PDF, DOCX, TXT)</p>
+</div>
+</div>
+</div>
+<!-- Parsing Status Pipeline -->
+<div class="glass-card rounded-xl p-stack-md flex flex-col gap-stack-md">
+<div class="flex justify-between items-center px-stack-sm">
+<span class="font-label-sm text-label-sm text-outline dark:text-outline-variant">Upload Status</span>
+<span class="font-label-sm text-label-sm text-primary dark:text-tertiary-fixed-dim bg-primary/10 px-3 py-1 rounded-full">Processing</span>
+</div>
+<!-- Progress Track -->
+<div class="relative flex justify-between items-center pt-stack-sm pb-base">
+<!-- Connecting Line -->
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-variant dark:bg-surface-variant/20 -translate-y-1/2 z-0"></div>
+<div class="absolute top-1/2 left-0 w-1/2 h-[3px] bg-gradient-to-r from-fuchsia-500 via-primary to-cyan-400 -translate-y-1/2 z-0 animate-gradient-move bg-[length:200%_auto] shadow-[0_0_8px_rgba(217,70,239,0.5)]"></div>
+<!-- Step 1: Uploaded -->
+<div class="relative z-10 flex flex-col items-center gap-base">
+<div class="w-8 h-8 rounded-full bg-gradient-to-br from-fuchsia-500 to-primary text-white flex items-center justify-center shadow-[0_0_15px_rgba(217,70,239,0.5)]">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface dark:text-white">Uploaded</span>
+</div>
+<!-- Step 2: Parsing (Active) -->
+<div class="relative z-10 flex flex-col items-center gap-base">
+<div class="w-8 h-8 rounded-full bg-surface dark:bg-inverse-surface border-2 border-cyan-400 text-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+<span class="material-symbols-outlined text-[16px] animate-spin" style="animation-duration: 3s;">document_scanner</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface dark:text-white">Parsing</span>
+</div>
+<!-- Step 3: Ready -->
+<div class="relative z-10 flex flex-col items-center gap-base">
+<div class="w-8 h-8 rounded-full bg-surface-variant dark:bg-surface-variant/20 text-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">task_alt</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline dark:text-outline-variant">Ready</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Extracted Data Preview (Simulated parsing state) -->
+<div class="lg:col-span-5 flex flex-col gap-stack-lg">
+<div class="glass-card rounded-xl p-stack-lg h-full flex flex-col relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300">
+<!-- Background Animation Placeholder -->
+<div class="absolute inset-0 z-0 opacity-30 pointer-events-none mix-blend-screen">
+    {{DATA:ANIMATION:ANIMATION_1}}
+</div>
+<!-- Top accent light -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-fuchsia-500 via-cyan-400 to-transparent opacity-80 z-10"></div>
+<h3 class="font-headline-md text-headline-md-mobile md:text-headline-md text-on-surface dark:text-white mb-stack-md flex items-center gap-2 relative z-10">
+<span class="material-symbols-outlined text-fuchsia-400 drop-shadow-[0_0_8px_rgba(217,70,239,0.5)]">troubleshoot</span>
+                        Live Analysis
+                    </h3>
+<!-- Shimmering Placeholder Content -->
+<div class="flex-1 flex flex-col gap-stack-md opacity-90 transition-opacity duration-500 relative z-10" id="analysis-preview">
+<!-- Extracted Contact Info (Glass Cards) -->
+<div class="space-y-stack-sm">
+<div class="font-label-sm text-label-sm text-outline dark:text-outline-variant mb-2">IDENTIFIED CANDIDATE</div>
+<div class="glass-card p-stack-sm rounded-lg flex items-center gap-stack-sm shimmer-effect bg-white/5 border-white/10">
+<div class="w-10 h-10 rounded-full bg-surface-variant dark:bg-inverse-surface flex items-center justify-center text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="h-4 w-32 bg-white/20 rounded"></div>
+</div>
+<div class="glass-card p-stack-sm rounded-lg flex items-center gap-stack-sm shimmer-effect bg-white/5 border-white/10">
+<div class="w-10 h-10 rounded-full bg-surface-variant dark:bg-inverse-surface flex items-center justify-center text-fuchsia-400 shadow-[0_0_10px_rgba(217,70,239,0.2)]">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div class="h-4 w-48 bg-white/20 rounded"></div>
+</div>
+</div>
+<!-- Extracted Skills (Chips) -->
+<div class="mt-stack-md">
+<div class="font-label-sm text-label-sm text-outline dark:text-outline-variant mb-stack-sm">DETECTED SKILLS</div>
+<div class="flex flex-wrap gap-2">
+<div class="h-8 w-20 bg-fuchsia-500/20 border border-fuchsia-500/50 rounded-full shimmer-effect shadow-[0_0_8px_rgba(217,70,239,0.3)]"></div>
+<div class="h-8 w-24 bg-cyan-500/20 border border-cyan-500/50 rounded-full shimmer-effect shadow-[0_0_8px_rgba(6,182,212,0.3)]"></div>
+<div class="h-8 w-16 bg-yellow-400/20 border border-yellow-400/50 rounded-full shimmer-effect shadow-[0_0_8px_rgba(250,204,21,0.3)]"></div>
+<div class="h-8 w-28 bg-emerald-400/20 border border-emerald-400/50 rounded-full shimmer-effect shadow-[0_0_8px_rgba(52,211,153,0.3)]"></div>
+<div class="h-8 w-20 bg-indigo-500/20 border border-indigo-500/50 rounded-full shimmer-effect shadow-[0_0_8px_rgba(99,102,241,0.3)]"></div>
+</div>
+</div>
+<!-- ATS Score Preview -->
+<div class="mt-auto pt-stack-lg flex justify-center">
+<div class="relative w-32 h-32 flex items-center justify-center">
+<!-- Subtle ring background -->
+<svg class="w-full h-full transform -rotate-90 absolute inset-0 text-surface-variant dark:text-surface-variant/20" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-width="8"></circle>
+</svg>
+<!-- Foreground scanning ring -->
+<svg class="w-full h-full transform -rotate-90 absolute inset-0 text-cyan-400 opacity-60 animate-pulse drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]" style="stroke-dasharray: 283; stroke-dashoffset: 200;" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="url(#score-gradient)" stroke-linecap="round" stroke-width="8"></circle>
+<defs>
+<lineargradient id="score-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#22d3ee"></stop>
+<stop offset="100%" stop-color="#d946ef"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="text-center">
+<span class="font-headline-md text-headline-md text-outline dark:text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] block">---</span>
+<span class="font-label-sm text-label-sm text-outline dark:text-cyan-200/70">Score</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple script to handle hover effects on dropzone
+        const dropzone = document.getElementById('dropzone');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropzone.classList.add('scale-[1.02]');
+        }
+
+        function unhighlight(e) {
+            dropzone.classList.remove('scale-[1.02]');
+        }
+    </script>
+</body></html>

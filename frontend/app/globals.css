@@ -28,6 +28,8 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -163,6 +165,8 @@
   --accent: #eaedff;
   --accent-foreground: #131b2e;
   --destructive: #ba1a1a;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
   --border: #c7c4d8;
   --input: #c7c4d8;
   --ring: #3525cd;
@@ -229,32 +233,36 @@
 }
 
 .dark {
-  /* shadcn semantic slots -> Stitch dark palette (hand-tuned per the dark export, not a mechanical inversion) */
-  --background: #0b0f19;
-  --foreground: #faf8ff;
-  --card: #11162a;
-  --card-foreground: #faf8ff;
-  --popover: #11162a;
-  --popover-foreground: #faf8ff;
+  /* shadcn semantic slots -> neutral slate gray-scale (cool, low-saturation
+     surfaces) so the indigo/blue/teal accent colors read as color against a
+     genuinely gray backdrop instead of an indigo-tinted near-black */
+  --background: #020617;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
   --primary: #4f46e5;
   --primary-foreground: #ffffff;
   --secondary: #39b8fd;
-  --secondary-foreground: #0b0f19;
-  --muted: #151a2e;
-  --muted-foreground: #d2d9f4;
-  --accent: #151a2e;
-  --accent-foreground: #faf8ff;
-  --destructive: #ba1a1a;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.15);
+  --secondary-foreground: #020617;
+  --muted: #1e293b;
+  --muted-foreground: #cbd5e1;
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
+  --destructive: #f87171;
+  --warning: #f59e0b;
+  --warning-foreground: #1c1300;
+  --border: rgba(148, 163, 184, 0.16);
+  --input: rgba(148, 163, 184, 0.22);
   --ring: #4f46e5;
-  --sidebar: #11162a;
-  --sidebar-foreground: #faf8ff;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f8fafc;
   --sidebar-primary: #4f46e5;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #151a2e;
-  --sidebar-accent-foreground: #faf8ff;
-  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: rgba(148, 163, 184, 0.16);
   --sidebar-ring: #4f46e5;
 }
 
@@ -297,7 +305,7 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 .dark .glass-nav {
-  background: rgba(11, 15, 25, 0.8);
+  background: rgba(2, 6, 23, 0.8);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -319,7 +327,7 @@
   transform: translateY(-2px);
 }
 .dark .shadcn-card {
-  background: rgba(11, 15, 25, 0.4);
+  background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -366,7 +374,7 @@
   background-color: #f8fafc;
 }
 .dark .shadcn-btn-outline {
-  background: rgba(11, 15, 25, 0.4);
+  background: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -503,4 +511,93 @@
 }
 .floating-card:hover {
   animation-play-state: paused;
+}
+
+/* ---------------------------------------------------------------- */
+/* Auth pages (login/signup) — fixed dark aesthetic, does not flip   */
+/* with the site theme toggle (source design used no dark: variants) */
+/* ---------------------------------------------------------------- */
+
+.glass-panel {
+  background: rgba(19, 27, 46, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #e2dfff, #71f8e4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.primary-gradient-btn {
+  background: linear-gradient(135deg, #3525cd 0%, #006591 100%);
+  box-shadow: 0px 4px 12px rgba(79, 70, 229, 0.3);
+  transition: all 0.3s ease;
+}
+.primary-gradient-btn:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #39b8fd 100%);
+  transform: scale(1.02);
+  box-shadow: 0px 8px 24px rgba(79, 70, 229, 0.4);
+}
+
+.blob-1 {
+  animation: authFloat1 15s infinite ease-in-out;
+}
+.blob-2 {
+  animation: authFloat2 20s infinite ease-in-out reverse;
+}
+.blob-3 {
+  animation: authFloat3 18s infinite ease-in-out 2s;
+}
+@keyframes authFloat1 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(30px, -50px) rotate(10deg);
+  }
+}
+@keyframes authFloat2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-40px, 30px) scale(1.1);
+  }
+}
+@keyframes authFloat3 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(20px, 40px) rotate(-15deg);
+  }
+}
+
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: authFadeInUp 0.6s ease-out forwards;
+}
+@keyframes authFadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.delay-100 {
+  animation-delay: 100ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
 }
