@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RecruitAI - ATS Score Result</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Montserrat:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#dad7ff",
+                        "outline": "#777587",
+                        "primary": "#3525cd",
+                        "primary-fixed": "#e2dfff",
+                        "secondary-fixed": "#c9e6ff",
+                        "tertiary-fixed-dim": "#4fdbc8",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary-container": "#39b8fd",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#dae2fd",
+                        "tertiary-container": "#006d62",
+                        "surface-container-low": "#f2f3ff",
+                        "inverse-on-surface": "#eef0ff",
+                        "inverse-primary": "#c3c0ff",
+                        "tertiary": "#00534a",
+                        "primary-container": "#4f46e5",
+                        "on-secondary-fixed": "#001e2f",
+                        "on-secondary-container": "#004666",
+                        "background": "#faf8ff",
+                        "on-error": "#ffffff",
+                        "secondary": "#006591",
+                        "secondary-fixed-dim": "#89ceff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#71f8e4",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#dae2fd",
+                        "on-surface-variant": "#464555",
+                        "on-secondary-fixed-variant": "#004c6e",
+                        "on-tertiary-fixed": "#00201c",
+                        "on-tertiary-fixed-variant": "#005048",
+                        "on-surface": "#131b2e",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "surface": "#faf8ff",
+                        "inverse-surface": "#0f172a", /* Deepened slate for modern startup look */
+                        "on-tertiary-container": "#69f1de",
+                        "surface-bright": "#faf8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#131b2e",
+                        "surface-container": "#eaedff",
+                        "surface-tint": "#4d44e3",
+                        "outline-variant": "#c7c4d8",
+                        "on-primary-fixed": "#0f0069",
+                        "surface-dim": "#d2d9f4",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin": "32px",
+                        "base": "4px",
+                        "gutter": "24px",
+                        "stack-sm": "12px",
+                        "section-gap": "96px",
+                        "stack-md": "24px",
+                        "stack-lg": "48px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "headline-md": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["13px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["56px", { "lineHeight": "1.1", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["28px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            position: relative;
+            overflow-x: hidden;
+        }
+        .dark body {
+            background-color: theme('colors.inverse-surface');
+            background-image: none; /* Replaced with CSS orbs */
+        }
+        
+        /* Floating Soft Orbs */
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(53, 37, 205, 0.4);
+            top: -100px;
+            left: -100px;
+        }
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: rgba(79, 219, 200, 0.3);
+            bottom: -200px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(79, 70, 229, 0.2);
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, 50px) scale(1.1); }
+            100% { transform: translate(-20px, -30px) scale(0.9); }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.5); /* deep slate transparent */
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark .glass-card:hover {
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .glow-chip {
+            background: rgba(53, 37, 205, 0.05);
+            border: 1px solid rgba(53, 37, 205, 0.2);
+            transition: all 0.3s ease;
+        }
+        .dark .glow-chip {
+            background: rgba(195, 192, 255, 0.05);
+            border: 1px solid rgba(195, 192, 255, 0.2);
+        }
+        .glow-chip:hover {
+            box-shadow: 0 0 15px rgba(53, 37, 205, 0.2);
+            transform: translateY(-2px);
+        }
+        .dark .glow-chip:hover {
+            box-shadow: 0 0 15px rgba(195, 192, 255, 0.2);
+        }
+
+        /* Circular Progress Animation */
+        @keyframes progress {
+            0% { stroke-dasharray: 0 100; }
+        }
+        .circular-chart {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            max-height: 280px;
+        }
+        .circle-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 2.5;
+        }
+        .dark .circle-bg {
+            stroke: rgba(255, 255, 255, 0.05);
+        }
+        .circle {
+            fill: none;
+            stroke-width: 3.5;
+            stroke-linecap: round;
+            animation: progress 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        .suggestion-card {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        .dark .suggestion-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .suggestion-card:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateX(4px);
+        }
+        .dark .suggestion-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="text-on-background dark:text-inverse-on-surface antialiased min-h-screen flex font-body-md text-body-md">
+<!-- Background Orbs -->
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+<div class="bg-orb orb-3"></div>
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col py-stack-lg gap-stack-md h-screen w-72 fixed left-0 top-0 z-40 bg-white/40 backdrop-blur-2xl dark:bg-slate-900/40 border-r border-black/5 dark:border-white/5 shadow-2xl">
+<div class="px-container-margin mb-stack-lg">
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed tracking-tight">RecruitAI</h1>
+<p class="font-label-sm text-label-sm text-outline dark:text-surface-variant uppercase mt-1 tracking-widest opacity-80">AI Talent Suite</p>
+</div>
+<div class="flex-1 flex flex-col gap-sm px-stack-sm">
+<a class="flex items-center gap-stack-md px-stack-md py-4 rounded-xl text-on-surface-variant dark:text-outline hover:bg-black/5 dark:hover:bg-white/5 hover:translate-x-1 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm font-semibold">Home</span>
+</a>
+<a class="flex items-center gap-stack-md px-stack-md py-4 rounded-xl bg-gradient-to-r from-primary/10 to-transparent text-primary dark:text-primary-fixed-dim border-l-4 border-primary dark:border-primary-fixed translate-x-1 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-sm text-label-sm font-bold">Applications</span>
+</a>
+<a class="flex items-center gap-stack-md px-stack-md py-4 rounded-xl text-on-surface-variant dark:text-outline hover:bg-black/5 dark:hover:bg-white/5 hover:translate-x-1 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-label-sm text-label-sm font-semibold">Skill Lab</span>
+</a>
+<a class="flex items-center gap-stack-md px-stack-md py-4 rounded-xl text-on-surface-variant dark:text-outline hover:bg-black/5 dark:hover:bg-white/5 hover:translate-x-1 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-sm text-label-sm font-semibold">AI Match</span>
+</a>
+<a class="flex items-center gap-stack-md px-stack-md py-4 rounded-xl text-on-surface-variant dark:text-outline hover:bg-black/5 dark:hover:bg-white/5 hover:translate-x-1 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="alt_route">alt_route</span>
+<span class="font-label-sm text-label-sm font-semibold">Career Path</span>
+</a>
+</div>
+<div class="px-container-margin mb-stack-md">
+<button class="w-full py-4 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-sm text-label-sm font-bold tracking-wide shadow-[0_8px_20px_rgba(53,37,205,0.3)] hover:shadow-[0_12px_24px_rgba(53,37,205,0.4)] hover:-translate-y-0.5 transition-all">
+                Upgrade to Pro
+            </button>
+</div>
+<div class="flex flex-col gap-base px-stack-sm mt-auto border-t border-black/5 dark:border-white/5 pt-stack-md">
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-xl text-on-surface-variant dark:text-outline hover:bg-black/5 dark:hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm font-semibold">Settings</span>
+</a>
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-xl text-on-surface-variant dark:text-outline hover:bg-black/5 dark:hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-sm text-label-sm font-semibold">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-72 p-container-margin pt-stack-lg max-w-7xl mx-auto w-full z-10 relative">
+<!-- Header -->
+<header class="mb-stack-lg flex justify-between items-end">
+<div>
+<p class="font-label-sm text-label-sm text-primary dark:text-tertiary-fixed uppercase mb-3 flex items-center gap-2 font-bold tracking-widest bg-primary/10 dark:bg-tertiary-fixed/10 px-4 py-2 rounded-full inline-flex backdrop-blur-md">
+<span class="material-symbols-outlined text-sm">auto_awesome</span> ATS Analysis Complete
+                </p>
+<h2 class="font-display-lg text-display-lg text-on-background dark:text-on-primary bg-clip-text text-transparent bg-gradient-to-r from-on-background to-on-surface-variant dark:from-white dark:to-white/70">Senior Frontend Engineer</h2>
+</div>
+<button class="hidden sm:flex items-center gap-2 px-8 py-4 rounded-full border border-primary/20 dark:border-primary-fixed/20 bg-white/50 dark:bg-white/5 backdrop-blur-md text-primary dark:text-primary-fixed font-label-sm text-label-sm font-bold hover:bg-primary/10 dark:hover:bg-primary-fixed/10 hover:shadow-lg transition-all">
+<span class="material-symbols-outlined">download</span> Download Report
+            </button>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter lg:gap-stack-lg">
+<!-- Left Column: Score Ring -->
+<div class="glass-card rounded-3xl p-stack-lg flex flex-col items-center justify-center lg:col-span-1 min-h-[480px]">
+<h3 class="font-headline-md text-headline-md mb-8 self-start">Match Score</h3>
+<div class="relative w-full max-w-[320px] aspect-square flex items-center justify-center mb-4">
+<svg class="circular-chart w-full h-full absolute inset-0 -rotate-90 drop-shadow-[0_0_20px_rgba(79,219,200,0.3)]" viewbox="0 0 36 36">
+<!-- Define Gradient -->
+<defs>
+<lineargradient id="score-gradient" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#4f46e5"></stop> <!-- Indigo -->
+<stop offset="100%" stop-color="#2dd4bf"></stop> <!-- Teal -->
+</lineargradient>
+<filter height="150%" id="glow" width="150%" x="-25%" y="-25%">
+<fegaussianblur result="blur" stddeviation="1.5"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<path class="circle-bg" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+<path class="circle" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" filter="url(#glow)" stroke="url(#score-gradient)" stroke-dasharray="92, 100"></path>
+</svg>
+<div class="text-center z-10 flex flex-col items-center mt-2">
+<span class="font-display-lg text-[72px] font-black text-on-background dark:text-white leading-none tracking-tighter" id="score-counter">92</span>
+<span class="font-label-sm text-label-sm text-primary dark:text-tertiary-fixed uppercase tracking-[0.2em] mt-3 font-bold">Excellent</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-center text-on-surface-variant dark:text-outline-variant mt-auto opacity-90 leading-relaxed">Your resume is highly optimized for this role. Minor tweaks suggested below.</p>
+</div>
+<!-- Right Column: Keywords & Suggestions -->
+<div class="lg:col-span-2 flex flex-col gap-gutter lg:gap-stack-md">
+<!-- Missing Keywords -->
+<div class="glass-card rounded-3xl p-stack-md lg:p-stack-lg">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline-md text-headline-md">Missing Keywords</h3>
+<span class="font-label-sm text-label-sm px-4 py-2 rounded-full bg-error/10 dark:bg-error-container/20 text-error dark:text-error-container border border-error/20 font-bold tracking-wide">Criticality: Medium</span>
+</div>
+<div class="flex flex-wrap gap-4">
+<span class="glow-chip px-5 py-3 rounded-full font-label-sm text-label-sm font-semibold text-primary dark:text-primary-fixed-dim flex items-center gap-2 bg-white/50 dark:bg-white/5 backdrop-blur-sm">
+<span class="material-symbols-outlined text-sm font-bold">add</span> Kubernetes
+                        </span>
+<span class="glow-chip px-5 py-3 rounded-full font-label-sm text-label-sm font-semibold text-primary dark:text-primary-fixed-dim flex items-center gap-2 bg-white/50 dark:bg-white/5 backdrop-blur-sm">
+<span class="material-symbols-outlined text-sm font-bold">add</span> Project Management
+                        </span>
+<span class="glow-chip px-5 py-3 rounded-full font-label-sm text-label-sm font-semibold text-primary dark:text-primary-fixed-dim flex items-center gap-2 bg-white/50 dark:bg-white/5 backdrop-blur-sm">
+<span class="material-symbols-outlined text-sm font-bold">add</span> CI/CD Pipelines
+                        </span>
+<span class="glow-chip px-5 py-3 rounded-full font-label-sm text-label-sm font-semibold text-primary dark:text-primary-fixed-dim flex items-center gap-2 bg-white/50 dark:bg-white/5 backdrop-blur-sm">
+<span class="material-symbols-outlined text-sm font-bold">add</span> GraphQL
+                        </span>
+</div>
+</div>
+<!-- AI Suggestions -->
+<div class="glass-card rounded-3xl p-stack-md lg:p-stack-lg flex-1">
+<h3 class="font-headline-md text-headline-md mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary-fixed">tips_and_updates</span>
+                    AI Suggestions
+                </h3>
+<div class="flex flex-col gap-5">
+<!-- Suggestion 1 -->
+<div class="suggestion-card p-6 rounded-2xl flex gap-5 items-start group cursor-pointer">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary/20 to-primary/20 dark:from-secondary-fixed/20 dark:to-primary-fixed/20 flex items-center justify-center shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-secondary dark:text-secondary-fixed">bar_chart</span>
+</div>
+<div class="flex-1">
+<h4 class="font-headline-sm text-lg font-bold mb-2 group-hover:text-primary dark:group-hover:text-primary-fixed transition-colors">Quantify results</h4>
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-outline-variant opacity-90 leading-relaxed">Add metrics to your recent role. Instead of "Improved page load time", use "Reduced page load time by 40% resulting in 15% increase in conversion."</p>
+</div>
+<div class="text-outline dark:text-white/30 group-hover:text-primary dark:group-hover:text-primary-fixed group-hover:translate-x-1 transition-all p-2">
+<span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</div>
+<!-- Suggestion 2 -->
+<div class="suggestion-card p-6 rounded-2xl flex gap-5 items-start group cursor-pointer">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-tertiary/20 to-secondary/20 dark:from-tertiary-fixed/20 dark:to-secondary-fixed/20 flex items-center justify-center shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-tertiary dark:text-tertiary-fixed">layers</span>
+</div>
+<div class="flex-1">
+<h4 class="font-headline-sm text-lg font-bold mb-2 group-hover:text-tertiary dark:group-hover:text-tertiary-fixed transition-colors">Add tech stack section</h4>
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-outline-variant opacity-90 leading-relaxed">Group your skills into categories (e.g., Languages, Frameworks, Tools) to make it easier for ATS parsers to categorize your expertise.</p>
+</div>
+<div class="text-outline dark:text-white/30 group-hover:text-tertiary dark:group-hover:text-tertiary-fixed group-hover:translate-x-1 transition-all p-2">
+<span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple counter animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const counter = document.getElementById('score-counter');
+            const target = 92;
+            const duration = 2500; // ms
+            const frameRate = 30; // ms
+            const totalFrames = duration / frameRate;
+            let frame = 0;
+
+            const interval = setInterval(() => {
+                frame++;
+                const progress = frame / totalFrames;
+                // Ease out cubic
+                const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+                const currentCount = Math.round(target * easeOutCubic);
+                
+                counter.textContent = currentCount;
+
+                if (frame >= totalFrames) {
+                    clearInterval(interval);
+                    counter.textContent = target;
+                }
+            }, frameRate);
+        });
+    </script>
+</body></html>

@@ -1,4 +1,5 @@
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { BrandLogo } from "@/components/layout/brand-logo";
 
 export function Navbar() {
   return (
@@ -6,11 +7,7 @@ export function Navbar() {
       <div className="flex justify-between items-center h-20 px-6 md:px-8 max-w-7xl mx-auto">
         {/* Brand Logo */}
         <a className="flex items-center gap-2 group" href="#">
-          <img
-            className="w-10 h-10 object-contain rounded-md transition-transform duration-200 group-hover:scale-105"
-            alt="RecruitAI logo abstract R with AI spark indigo to teal gradient vector style clean lines"
-            src="https://lh3.googleusercontent.com/aida/AP1WRLusUdBP0fC9M-p_pfveggZ8O2uPIlnKUHejtnsT8RxoVDMc1yfNJQwcty5AUpTetzl2AXjS5UONEEv-kcwwH7DMMc2ONSo5gTS9exIc2RIGNc7YSedeRQjjqw7vfStZeH9xmRdxepqI8zXHYmI1SJ2iRKjh-U65-ufsjKaLwHRgyRvmAHPLoE4SKVhfYNb4SluXpTUjO3_0CYX5xBzC1U0rh2l_M2KH2OhFw17kHcBJYtcJY53yWIXRq9k"
-          />
+          <BrandLogo className="w-10 h-10 transition-transform duration-200 group-hover:scale-105" />
           <span className="font-headline-md text-xl font-bold text-foreground tracking-tight">
             RecruitAI
           </span>
