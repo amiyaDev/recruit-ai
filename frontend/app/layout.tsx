@@ -31,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`scroll-smooth overflow-x-hidden ${inter.variable} ${montserrat.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
+      <head suppressHydrationWarning>
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
