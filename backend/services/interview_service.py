@@ -116,6 +116,10 @@ class InterviewService:
         return session
 
     @staticmethod
+    def list_for_user(db: Session, user_id: uuid.UUID, skip: int, limit: int) -> list[InterviewSession]:
+        return InterviewRepository.list_by_user(db, user_id, skip, limit)
+
+    @staticmethod
     def get_owned_session(db: Session, user_id: uuid.UUID, session_id: uuid.UUID) -> InterviewSession:
         session = InterviewRepository.get_session_by_id(db, session_id)
         if not session or session.user_id != user_id:

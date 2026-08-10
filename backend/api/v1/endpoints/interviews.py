@@ -11,6 +11,7 @@ from schemas.interview_schemas import (
     InterviewAnswerRequest,
     InterviewGenerateRequest,
     InterviewQuestionResponse,
+    InterviewSessionListResponse,
     InterviewSessionResponse,
 )
 from services.interview_service import InterviewService
@@ -22,6 +23,8 @@ def _to_session_response(db: Session, session) -> InterviewSessionResponse:
     questions = InterviewRepository.get_questions_by_session(db, session.id)
     return InterviewSessionResponse(
         id=session.id,
+        resume_id=session.resume_id,
+        job_id=session.job_id,
         difficulty=session.difficulty,
         status=session.status,
         overall_score=session.overall_score,
@@ -38,6 +41,16 @@ async def generate(
 ):
     session = InterviewService.generate(db, current_user.id, data)
     return _to_session_response(db, session)
+
+
+@router.get("/", response_model=list[InterviewSessionListResponse])
+async def list_sessions(
+    skip: int = 0,
+    limit: int = 20,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return InterviewService.list_for_user(db, current_user.id, skip, limit)
 
 
 @router.get("/{session_id}", response_model=InterviewSessionResponse)

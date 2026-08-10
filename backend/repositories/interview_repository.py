@@ -20,6 +20,17 @@ class InterviewRepository:
         return db.query(InterviewSession).filter(InterviewSession.id == session_id).first()
 
     @staticmethod
+    def list_by_user(db: Session, user_id: uuid.UUID, skip: int, limit: int) -> list[InterviewSession]:
+        return (
+            db.query(InterviewSession)
+            .filter(InterviewSession.user_id == user_id)
+            .order_by(InterviewSession.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
     def update_session(db: Session, session: InterviewSession, updates: dict) -> InterviewSession:
         for field, value in updates.items():
             setattr(session, field, value)
