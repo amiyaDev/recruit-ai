@@ -3,14 +3,16 @@ import type { Metadata } from "next";
 
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { AuthBrand } from "@/components/auth/auth-brand";
-import { PasswordInput } from "@/components/auth/password-input";
+import { LoginForm } from "@/components/auth/login-form";
 import { SocialLoginButton } from "@/components/auth/social-login-button";
 
 export const metadata: Metadata = {
   title: "Login - RecruitAI",
 };
 
-export default function LoginPage() {
+export default async function LoginPage({ searchParams }: PageProps<"/login">) {
+  const { registered } = await searchParams;
+
   return (
     <AuthLayout>
       <AuthBrand />
@@ -24,50 +26,14 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <form className="space-y-stack-md delay-100 fade-in-up">
-        <div className="space-y-stack-sm">
-          <label className="block font-label-sm text-label-sm text-surface-variant" htmlFor="email">
-            Email Address
-          </label>
-          <div className="relative">
-            <span
-              className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none"
-              style={{ fontVariationSettings: "'FILL' 0" }}
-            >
-              mail
-            </span>
-            <input
-              id="email"
-              type="email"
-              placeholder="name@company.com"
-              required
-              className="w-full bg-inverse-surface border border-outline/30 rounded-lg py-3 pl-10 pr-4 text-surface placeholder:text-outline-variant focus:outline-none focus:border-primary-fixed focus:ring-2 focus:ring-primary-fixed/20 transition-all shadow-inner"
-            />
-          </div>
+      {registered && (
+        <div className="mb-stack-md flex items-start gap-2 rounded-lg border border-tertiary-fixed/30 bg-tertiary-fixed/10 px-4 py-3 text-tertiary-fixed fade-in-up">
+          <span className="material-symbols-outlined text-[18px] shrink-0 mt-0.5">check_circle</span>
+          <p className="font-body-md text-sm">Account created — log in to continue.</p>
         </div>
+      )}
 
-        <div className="space-y-stack-sm">
-          <div className="flex justify-between items-center">
-            <label className="block font-label-sm text-label-sm text-surface-variant" htmlFor="password">
-              Password
-            </label>
-            <Link
-              href="#"
-              className="font-label-sm text-label-sm text-primary-fixed hover:text-tertiary-fixed transition-colors"
-            >
-              Forgot password?
-            </Link>
-          </div>
-          <PasswordInput id="password" placeholder="••••••••" required />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full py-3 rounded-lg font-body-md text-body-md font-semibold text-white primary-gradient-btn mt-stack-sm"
-        >
-          Login
-        </button>
-      </form>
+      <LoginForm />
 
       <div className="my-stack-md flex items-center justify-center gap-4 delay-200 fade-in-up">
         <div className="h-px bg-outline/20 flex-1" />

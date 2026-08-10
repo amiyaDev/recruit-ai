@@ -45,6 +45,13 @@ class ResponseMiddleware(BaseHTTPMiddleware):
         except Exception:
             return response
 
+        # Preserve headers set upstream (e.g. CORS' Access-Control-Allow-*)
+        # instead of dropping them on the fresh response object below.
+        # content-length is excluded so JSONResponse recomputes it for the
+        # new (re-wrapped) body instead of reusing the stale original value.
+        headers = dict(response.headers)
+        headers.pop("content-length", None)
+
         return JSONResponse(
             status_code=response.status_code,
             content={
@@ -52,4 +59,5 @@ class ResponseMiddleware(BaseHTTPMiddleware):
                 "message": "Request successful",
                 "data": content,
             },
+            headers=headers,
         )

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { AuthBrand } from "@/components/auth/auth-brand";
-import { AuthInput } from "@/components/auth/auth-input";
+import { SignUpForm } from "@/components/auth/signup-form";
 import { SocialLoginButton } from "@/components/auth/social-login-button";
 
 export const metadata: Metadata = {
@@ -24,40 +24,7 @@ export default function SignUpPage() {
         </p>
       </div>
 
-      <form className="space-y-stack-md delay-100 fade-in-up">
-        <AuthInput label="Full Name" icon="person" id="name" type="text" placeholder="Jane Doe" required />
-        <AuthInput
-          label="Email Address"
-          icon="mail"
-          id="email"
-          type="email"
-          placeholder="jane@example.com"
-          required
-        />
-        <AuthInput
-          label="Password"
-          icon="lock"
-          id="password"
-          type="password"
-          placeholder="••••••••"
-          required
-        />
-        <AuthInput
-          label="Confirm Password"
-          icon="lock_reset"
-          id="confirm-password"
-          type="password"
-          placeholder="••••••••"
-          required
-        />
-
-        <button
-          type="submit"
-          className="w-full py-3 rounded-lg font-body-md text-body-md font-semibold text-white primary-gradient-btn mt-stack-sm"
-        >
-          Create Account
-        </button>
-      </form>
+      <SignUpForm />
 
       <div className="my-stack-md flex items-center justify-center gap-4 delay-200 fade-in-up">
         <div className="h-px bg-outline/20 flex-1" />

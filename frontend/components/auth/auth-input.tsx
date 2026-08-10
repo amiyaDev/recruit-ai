@@ -1,9 +1,12 @@
+import { cn } from "@/lib/utils";
+
 interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   icon: string;
+  error?: string;
 }
 
-export function AuthInput({ label, icon, id, ...props }: AuthInputProps) {
+export function AuthInput({ label, icon, id, error, className, ...props }: AuthInputProps) {
   return (
     <div className="space-y-stack-sm">
       <label className="block font-label-sm text-label-sm text-surface-variant" htmlFor={id}>
@@ -15,10 +18,16 @@ export function AuthInput({ label, icon, id, ...props }: AuthInputProps) {
         </span>
         <input
           id={id}
-          className="w-full bg-inverse-surface border border-outline/30 rounded-lg py-3 pl-10 pr-4 text-surface placeholder:text-outline-variant focus:outline-none focus:border-primary-fixed focus:ring-2 focus:ring-primary-fixed/20 transition-all shadow-inner"
+          aria-invalid={Boolean(error)}
+          className={cn(
+            "w-full bg-inverse-surface border border-outline/30 rounded-lg py-3 pl-10 pr-4 text-surface placeholder:text-outline-variant focus:outline-none focus:border-primary-fixed focus:ring-2 focus:ring-primary-fixed/20 transition-all shadow-inner",
+            error && "border-error focus:border-error focus:ring-error/20",
+            className
+          )}
           {...props}
         />
       </div>
+      {error && <p className="font-label-sm text-label-sm text-error">{error}</p>}
     </div>
   );
 }
