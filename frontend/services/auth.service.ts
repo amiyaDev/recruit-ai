@@ -22,7 +22,6 @@ export async function logoutUser(refreshToken: string): Promise<void> {
   await apiClient.post("/auth/logout", { refresh_token: refreshToken });
 }
 
-export async function fetchCurrentUser(): Promise<User> {
-  const { data } = await apiClient.get<ApiEnvelope<User>>("/auth/me");
-  return data.data;
-}
+// Fetching/updating the current user's profile lives in services/user.service.ts
+// (GET/PATCH /users/me) — the single canonical source for "who am I", consumed
+// via context/user-context.tsx rather than a second, redundant /auth/me query.

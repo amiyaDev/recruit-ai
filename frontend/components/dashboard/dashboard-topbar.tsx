@@ -4,11 +4,11 @@ import Link from "next/link";
 
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { LogoutButton } from "@/components/dashboard/logout-button";
-import { useCurrentUser } from "@/hooks/auth/use-current-user";
+import { useUser } from "@/context/user-context";
 import { MOCK_USER } from "@/constants/dashboard-mock-data";
 
 export function DashboardTopbar() {
-  const { data: user, isLoading } = useCurrentUser();
+  const { user, isLoading } = useUser();
 
   const displayName = user?.name ?? (isLoading ? "" : MOCK_USER.name);
   const initials = displayName

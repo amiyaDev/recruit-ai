@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from core.constants import ALLOWED_RESUME_EXTENSIONS, MAX_RESUME_SIZE_BYTES, ResumeFileType, ResumeStatus
 from core.exceptions import NotFoundError, ValidationError
 from models.resumes import Resume
+from repositories.ats_repository import ATSRepository
 from repositories.resume_repository import ResumeRepository
 from services.parsing_service import parse_resume_text
 from utils.docx_extractor import extract_text_from_docx
@@ -91,6 +92,7 @@ class ResumeService:
     @staticmethod
     def delete(db: Session, user_id: uuid.UUID, resume_id: uuid.UUID) -> None:
         resume = ResumeService.get_owned(db, user_id, resume_id)
+        ATSRepository.delete_by_resume(db, resume.id)
         delete_vector(RESUMES_COLLECTION, resume.id)
         file_path = Path(resume.file_path)
         if file_path.exists():
