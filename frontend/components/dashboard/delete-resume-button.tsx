@@ -1,23 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useDeleteResume } from "@/hooks/resumes/use-delete-resume";
 
-export function DeleteResumeButton({ filename }: { filename: string }) {
+export function DeleteResumeButton({ id, filename }: { id: string; filename: string }) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+  const deleteResume = useDeleteResume();
 
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-lg border border-destructive/30 text-destructive px-3 py-2 hover:bg-destructive/10 transition-colors"
+        className="rounded-lg border border-destructive/30 text-destructive px-3 py-2 hover:bg-destructive/10 transition-colors disabled:opacity-60"
         aria-label="Delete resume"
+        disabled={deleteResume.isPending}
       >
-        <span className="material-symbols-outlined text-[18px]">delete</span>
+        <span className="material-symbols-outlined text-[18px]">
+          {deleteResume.isPending ? "hourglass_empty" : "delete"}
+        </span>
       </button>
 
       <ConfirmDialog
@@ -28,7 +31,7 @@ export function DeleteResumeButton({ filename }: { filename: string }) {
         confirmLabel="Delete resume"
         destructive
         icon="delete"
-        onConfirm={() => router.push("/resumes")}
+        onConfirm={() => deleteResume.mutate(id)}
       />
     </>
   );
