@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useLogout } from "@/hooks/auth/use-logout";
 
 export function LogoutButton({
   variant = "sidebar",
@@ -14,7 +14,7 @@ export function LogoutButton({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+  const logout = useLogout();
 
   return (
     <>
@@ -38,11 +38,11 @@ export function LogoutButton({
         onOpenChange={setOpen}
         title="Log out of RecruitAI?"
         description="You'll need to sign in again to access your resumes, jobs, and analysis history."
-        confirmLabel="Log out"
+        confirmLabel={logout.isPending ? "Logging out…" : "Log out"}
         cancelLabel="Stay signed in"
         destructive
         icon="logout"
-        onConfirm={() => router.push("/login")}
+        onConfirm={() => logout.mutate()}
       />
     </>
   );
