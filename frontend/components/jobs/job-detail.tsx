@@ -74,7 +74,7 @@ export function JobDetail({ id }: { id: string }) {
         <div className="flex items-center gap-2">
           <StatusBadge status={job.status} />
           <Link
-            href="/ats"
+            href={`/ats?jobId=${job.id}`}
             className="shadcn-btn-primary font-label-sm text-sm px-5 py-2.5 flex items-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">troubleshoot</span>

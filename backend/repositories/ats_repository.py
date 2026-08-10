@@ -27,3 +27,13 @@ class ATSRepository:
             .order_by(ATSScore.created_at.desc())
             .all()
         )
+
+    @staticmethod
+    def delete_by_resume(db: Session, resume_id: uuid.UUID) -> None:
+        db.query(ATSScore).filter(ATSScore.resume_id == resume_id).delete()
+        db.commit()
+
+    @staticmethod
+    def delete_by_job(db: Session, job_id: uuid.UUID) -> None:
+        db.query(ATSScore).filter(ATSScore.job_id == job_id).delete()
+        db.commit()

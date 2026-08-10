@@ -9,7 +9,8 @@ import { FormError } from "@/components/ui/form-error";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { useResume } from "@/hooks/resumes/use-resume";
 import { useReparseResume } from "@/hooks/resumes/use-reparse-resume";
-import { MOCK_ATS_SCORES, getJobById } from "@/constants/dashboard-mock-data";
+import { useAtsHistory } from "@/hooks/ats/use-ats-history";
+import { useJobs } from "@/hooks/jobs/use-jobs";
 
 function fileIcon(filename: string) {
   return filename.toLowerCase().endsWith(".pdf") ? "picture_as_pdf" : "description";
@@ -18,6 +19,8 @@ function fileIcon(filename: string) {
 export function ResumeDetail({ id }: { id: string }) {
   const { data: resume, isLoading, isError, error } = useResume(id);
   const reparse = useReparseResume(id);
+  const atsHistory = useAtsHistory(resume?.status === "parsed" ? id : undefined);
+  const { data: jobs } = useJobs();
 
   if (isLoading) {
     return (
@@ -170,44 +173,46 @@ export function ResumeDetail({ id }: { id: string }) {
             <section className="shadcn-card rounded-xl p-stack-lg">
               <div className="flex items-center justify-between mb-stack-md">
                 <h3 className="font-headline-md text-headline-md text-foreground">ATS history</h3>
-                <Link href="/ats" className="font-label-sm text-xs text-primary hover:underline">
+                <Link href={`/ats?resumeId=${resume.id}`} className="font-label-sm text-xs text-primary hover:underline">
                   New analysis
                 </Link>
               </div>
-              {(() => {
-                const relatedScores = MOCK_ATS_SCORES.filter((s) => s.resumeId === resume.id);
-                if (relatedScores.length === 0) {
-                  return (
-                    <p className="font-body-md text-sm text-muted-foreground">
-                      No ATS analysis run against this resume yet.
-                    </p>
-                  );
-                }
-                return (
-                  <div className="flex flex-col divide-y divide-border">
-                    {relatedScores.map((score) => {
-                      const job = getJobById(score.jobId);
-                      return (
-                        <Link
-                          key={score.id}
-                          href={`/ats/${score.id}`}
-                          className="flex items-center gap-3 py-3 first:pt-0 last:pb-0 hover:bg-muted/40 -mx-2 px-2 rounded-lg transition-colors"
-                        >
-                          <div className="w-9 h-9 rounded-full bg-tertiary-container/10 text-tertiary flex items-center justify-center font-headline-md text-xs font-bold shrink-0">
-                            {score.score}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-body-md text-sm font-medium text-foreground truncate">
-                              {job?.title}
-                            </p>
-                            <p className="font-body-md text-xs text-muted-foreground">{job?.company}</p>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                );
-              })()}
+              {atsHistory.isLoading ? (
+                <div className="flex flex-col gap-2 animate-pulse">
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <div key={i} className="h-12 rounded-lg bg-muted" />
+                  ))}
+                </div>
+              ) : atsHistory.isError ? (
+                <FormError message={getApiErrorMessage(atsHistory.error, "Couldn't load ATS history.")} />
+              ) : !atsHistory.data || atsHistory.data.length === 0 ? (
+                <p className="font-body-md text-sm text-muted-foreground">
+                  No ATS analysis run against this resume yet.
+                </p>
+              ) : (
+                <div className="flex flex-col divide-y divide-border">
+                  {atsHistory.data.map((score) => {
+                    const job = jobs?.find((j) => j.id === score.job_id);
+                    return (
+                      <Link
+                        key={score.id}
+                        href={`/ats/${score.id}`}
+                        className="flex items-center gap-3 py-3 first:pt-0 last:pb-0 hover:bg-muted/40 -mx-2 px-2 rounded-lg transition-colors"
+                      >
+                        <div className="w-9 h-9 rounded-full bg-tertiary-container/10 text-tertiary flex items-center justify-center font-headline-md text-xs font-bold shrink-0">
+                          {Math.round(score.score)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-body-md text-sm font-medium text-foreground truncate">
+                            {job?.title ?? "Job"}
+                          </p>
+                          <p className="font-body-md text-xs text-muted-foreground">{job?.company}</p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </section>
 
             <Link
