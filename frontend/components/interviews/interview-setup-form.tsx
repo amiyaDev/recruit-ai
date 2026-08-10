@@ -169,7 +169,7 @@ export function InterviewSetupForm({
                   </div>
                   {session.status === "completed" && typeof session.overall_score === "number" && (
                     <span className="font-headline-md text-sm font-bold text-tertiary">
-                      {Math.round(session.overall_score)}
+                      {Math.round(session.overall_score * 10)}
                     </span>
                   )}
                   <StatusBadge status={session.status} />
