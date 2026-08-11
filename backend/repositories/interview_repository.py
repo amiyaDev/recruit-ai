@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy.orm import Session
 
+from core.constants import InterviewSessionStatus
 from models.interview import InterviewQuestion, InterviewSession
 
 
@@ -26,6 +27,16 @@ class InterviewRepository:
             .filter(InterviewSession.user_id == user_id)
             .order_by(InterviewSession.created_at.desc())
             .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
+    def list_recent_completed_for_user(db: Session, user_id: uuid.UUID, limit: int = 2) -> list[InterviewSession]:
+        return (
+            db.query(InterviewSession)
+            .filter(InterviewSession.user_id == user_id, InterviewSession.status == InterviewSessionStatus.COMPLETED)
+            .order_by(InterviewSession.created_at.desc())
             .limit(limit)
             .all()
         )

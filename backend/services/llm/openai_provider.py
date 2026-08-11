@@ -19,3 +19,17 @@ class OpenAIProvider(LLMProvider):
         content = response.choices[0].message.content
         usage = response.usage
         return content, usage.prompt_tokens, usage.completion_tokens
+    
+    
+    def generate_stream(self, prompt: str):
+        stream = _client.chat.completions.create(
+            model=self.MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            stream=True,
+            stream_options={"include_usage": True},
+        )
+        for chunk in stream:
+            if chunk.choices and chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content, None, None
+            if chunk.usage:
+                yield None, chunk.usage.prompt_tokens, chunk.usage.completion_tokens

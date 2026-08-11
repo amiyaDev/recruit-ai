@@ -5,7 +5,7 @@ import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { clearAuthTokens, getAuthTokens, setAuthTokens } from "@/lib/cookies";
 import type { ApiEnvelope, TokenResponse } from "@/types/auth.types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
 
 // Auth endpoints that must never trigger the 401-refresh-retry cycle below —
 // hitting refresh's own 401 (expired/invalid refresh token) with the same
@@ -31,7 +31,7 @@ const refreshClient = axios.create({ baseURL: API_BASE_URL });
 
 let refreshPromise: Promise<TokenResponse> | null = null;
 
-function refreshAccessToken(): Promise<TokenResponse> {
+export function refreshAccessToken(): Promise<TokenResponse> {
   const { refreshToken } = getAuthTokens();
   if (!refreshToken) {
     return Promise.reject(new Error("No refresh token available"));

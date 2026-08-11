@@ -20,6 +20,34 @@ class ChatRepository:
         return db.query(ChatSession).filter(ChatSession.id == session_id).first()
 
     @staticmethod
+    def list_sessions_for_user(db: Session, user_id: uuid.UUID, skip: int, limit: int) -> list[ChatSession]:
+        return (
+            db.query(ChatSession)
+            .filter(ChatSession.user_id == user_id)
+            .order_by(ChatSession.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
+    def set_title_if_missing(db: Session, session: ChatSession, content: str) -> None:
+        if session.title:
+            return
+        session.title = content if len(content) <= 60 else content[:57] + "..."
+        db.commit()
+
+    @staticmethod
+    def delete_messages_by_session(db: Session, session_id: uuid.UUID) -> None:
+        db.query(ChatMessage).filter(ChatMessage.session_id == session_id).delete()
+        db.commit()
+
+    @staticmethod
+    def delete_session(db: Session, session: ChatSession) -> None:
+        db.delete(session)
+        db.commit()
+
+    @staticmethod
     def create_message(db: Session, data: dict) -> ChatMessage:
         message = ChatMessage(**data)
         db.add(message)
