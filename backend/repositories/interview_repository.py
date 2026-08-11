@@ -20,6 +20,17 @@ class InterviewRepository:
         return db.query(InterviewSession).filter(InterviewSession.id == session_id).first()
 
     @staticmethod
+    def list_by_user(db: Session, user_id: uuid.UUID, skip: int, limit: int) -> list[InterviewSession]:
+        return (
+            db.query(InterviewSession)
+            .filter(InterviewSession.user_id == user_id)
+            .order_by(InterviewSession.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
     def update_session(db: Session, session: InterviewSession, updates: dict) -> InterviewSession:
         for field, value in updates.items():
             setattr(session, field, value)
@@ -58,3 +69,15 @@ class InterviewRepository:
         db.commit()
         db.refresh(question)
         return question
+
+    @staticmethod
+    def clear_resume_reference(db: Session, resume_id: uuid.UUID) -> None:
+        # Sessions stay meaningful (questions/answers/feedback/scores) even
+        # once their source resume is gone — detach rather than delete.
+        db.query(InterviewSession).filter(InterviewSession.resume_id == resume_id).update({"resume_id": None})
+        db.commit()
+
+    @staticmethod
+    def clear_job_reference(db: Session, job_id: uuid.UUID) -> None:
+        db.query(InterviewSession).filter(InterviewSession.job_id == job_id).update({"job_id": None})
+        db.commit()

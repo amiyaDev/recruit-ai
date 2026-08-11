@@ -23,18 +23,33 @@ class InterviewQuestionResponse(BaseModel):
     question_type: QuestionType
     user_answer: str | None
     ai_feedback: str | None
+    ideal_answer: str | None  # NEW
     score: float | None
-
     class Config:
         from_attributes = True
 
 
 class InterviewSessionResponse(BaseModel):
     id: uuid.UUID
+    resume_id: uuid.UUID | None
+    job_id: uuid.UUID | None
     difficulty: InterviewDifficulty
     status: InterviewSessionStatus
     overall_score: float | None
     questions: list[InterviewQuestionResponse]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class InterviewSessionListResponse(BaseModel):
+    id: uuid.UUID
+    resume_id: uuid.UUID | None
+    job_id: uuid.UUID | None
+    difficulty: InterviewDifficulty
+    status: InterviewSessionStatus
+    overall_score: float | None
     created_at: datetime
 
     class Config:

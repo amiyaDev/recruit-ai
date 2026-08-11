@@ -30,5 +30,6 @@ class InterviewQuestion(Base):
     question_type = Column(Enum(QuestionType), nullable=False)
     user_answer = Column(Text, nullable=True)
     ai_feedback = Column(Text, nullable=True)
+    ideal_answer = Column(Text, nullable=True)  # NEW
     score = Column(Float, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
