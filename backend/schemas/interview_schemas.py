@@ -23,8 +23,8 @@ class InterviewQuestionResponse(BaseModel):
     question_type: QuestionType
     user_answer: str | None
     ai_feedback: str | None
+    ideal_answer: str | None  # NEW
     score: float | None
-
     class Config:
         from_attributes = True
 

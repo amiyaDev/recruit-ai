@@ -7,14 +7,10 @@ import { isAxiosError } from "axios";
 
 import { FormError } from "@/components/ui/form-error";
 import { getApiErrorMessage } from "@/lib/api-error";
+import { QUESTION_TYPE_META } from "@/constants/interview";
 import { useInterview } from "@/hooks/interviews/use-interview";
 import { useAnswerQuestion } from "@/hooks/interviews/use-answer-question";
 import { useEvaluateInterview } from "@/hooks/interviews/use-evaluate-interview";
-
-const QUESTION_TYPE_META: Record<string, { label: string; icon: string }> = {
-  technical: { label: "Technical", icon: "code" },
-  behavioral: { label: "Behavioral", icon: "diversity_3" },
-};
 
 export function InterviewPractice({ id }: { id: string }) {
   const router = useRouter();

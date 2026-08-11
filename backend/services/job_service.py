@@ -6,6 +6,7 @@ from core.constants import JobStatus
 from core.exceptions import NotFoundError
 from models.job import Job
 from repositories.ats_repository import ATSRepository
+from repositories.interview_repository import InterviewRepository
 from repositories.job_repository import JobRepository
 from schemas.job_schemas import JobCreate
 from services.embedding_service import delete_vector, upsert_vector
@@ -63,5 +64,6 @@ class JobService:
     def delete(db: Session, user_id: uuid.UUID, job_id: uuid.UUID) -> None:
         job = JobService.get_owned(db, user_id, job_id)
         ATSRepository.delete_by_job(db, job.id)
+        InterviewRepository.clear_job_reference(db, job.id)
         delete_vector(JOBS_COLLECTION, job.id)
         JobRepository.delete(db, job)

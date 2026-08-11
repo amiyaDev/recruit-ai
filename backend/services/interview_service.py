@@ -35,7 +35,7 @@ question_type must be either "technical" or "behavioral".
 """
 
 
-def _build_evaluate_prompt(qa_pairs: list[dict]) -> str:
+def _build_evaluate_prompt(qa_pairs: list[dict], skills: list[str], resume_excerpt: str | None) -> str:
     blocks = []
     for i, qa in enumerate(qa_pairs, start=1):
         blocks.append(
@@ -43,15 +43,29 @@ def _build_evaluate_prompt(qa_pairs: list[dict]) -> str:
             f"Answer: {qa['answer'] or '(no answer provided)'}"
         )
     joined = "\n\n".join(blocks)
+    skills_line = f"Candidate's known skills (from their resume): {', '.join(skills) or 'not specified'}"
+    experience_line = (
+        f"Resume excerpt (use this to judge the candidate's seniority / years of experience — "
+        f"look at job titles, dates, and depth of responsibilities described):\n{resume_excerpt}"
+        if resume_excerpt
+        else "No resume was attached to this session — evaluate answers on their own merit without assuming a seniority level."
+    )
 
     return f"""You are an interview coach evaluating a candidate's mock interview answers.
 
+{skills_line}
+
+{experience_line}
+
 {joined}
 
-For each question, give a score from 0 to 10 and short, specific feedback.
+First, infer the candidate's approximate seniority level (entry-level, mid-level, or senior) from the resume excerpt above. Then, for each question:
+- Give a score from 0 to 10, judged against what's reasonable to expect at that seniority level — don't grade a junior candidate as harshly as a senior one, and don't let a senior candidate coast on a shallow answer.
+- Give short, specific feedback like a teacher correcting a student: point out exactly what was missing, wrong, or shallow.
+- Give an ideal_answer: a strong sample answer written at (or one notch above) the candidate's inferred seniority level — the kind of answer a senior engineer coaching them would model.
 
 Respond ONLY as JSON in this exact shape:
-{{"evaluations": [{{"question_index": 1, "score": 7, "feedback": "..."}}, ...]}}
+{{"evaluations": [{{"question_index": 1, "score": 7, "feedback": "...", "ideal_answer": "..."}}, ...]}}
 question_index must match the Q numbers above (1-based).
 """
 
@@ -150,6 +164,18 @@ class InterviewService:
 
         ensure_budget_available(db)
 
+        # NEW — pull the candidate's skills so feedback/ideal answers match their level
+        # pull the candidate's skills + a resume excerpt so feedback/ideal answers
+        # can be calibrated to their actual seniority, not just their skill list
+        skills: list[str] = []
+        resume_excerpt: str | None = None
+        if session.resume_id:
+            resume = ResumeRepository.get_by_id(db, session.resume_id)
+            if resume:
+                skills = (resume.parsed_data or {}).get("skills", [])
+                if resume.raw_text:
+                    resume_excerpt = resume.raw_text[:1500]
+
         qa_pairs = [
             {
                 "question_type": q.question_type.value,
@@ -160,7 +186,7 @@ class InterviewService:
         ]
 
         try:
-            prompt = _build_evaluate_prompt(qa_pairs)
+            prompt = _build_evaluate_prompt(qa_pairs, skills, resume_excerpt)  # CHANGED — now passes skills
             response_text, input_tokens, output_tokens = OpenAIProvider().generate(prompt)
             record_usage(db, user_id, LLMFeature.INTERVIEW_EVALUATE, input_tokens, output_tokens)
             evaluations = json.loads(response_text).get("evaluations", [])
@@ -175,7 +201,13 @@ class InterviewService:
             question = questions[index - 1]
             score = evaluation.get("score")
             InterviewRepository.update_question(
-                db, question, {"ai_feedback": evaluation.get("feedback"), "score": score}
+                db,
+                question,
+                {
+                    "ai_feedback": evaluation.get("feedback"),
+                    "ideal_answer": evaluation.get("ideal_answer"),  # NEW
+                    "score": score,
+                },
             )
             if score is not None:
                 scores.append(score)

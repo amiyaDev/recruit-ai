@@ -10,6 +10,7 @@ export interface InterviewQuestion {
   question_type: QuestionType;
   user_answer: string | null;
   ai_feedback: string | null;
+  ideal_answer: string | null; // NEW
   score: number | null;
 }
 

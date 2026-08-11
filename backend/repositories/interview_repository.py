@@ -69,3 +69,15 @@ class InterviewRepository:
         db.commit()
         db.refresh(question)
         return question
+
+    @staticmethod
+    def clear_resume_reference(db: Session, resume_id: uuid.UUID) -> None:
+        # Sessions stay meaningful (questions/answers/feedback/scores) even
+        # once their source resume is gone — detach rather than delete.
+        db.query(InterviewSession).filter(InterviewSession.resume_id == resume_id).update({"resume_id": None})
+        db.commit()
+
+    @staticmethod
+    def clear_job_reference(db: Session, job_id: uuid.UUID) -> None:
+        db.query(InterviewSession).filter(InterviewSession.job_id == job_id).update({"job_id": None})
+        db.commit()
