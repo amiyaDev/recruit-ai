@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy.orm import Session
 
+from core.constants import ResumeStatus
 from models.resumes import Resume
 
 
@@ -28,6 +29,15 @@ class ResumeRepository:
             .offset(skip)
             .limit(limit)
             .all()
+        )
+
+    @staticmethod
+    def get_most_recent_parsed_for_user(db: Session, user_id: uuid.UUID) -> Resume | None:
+        return (
+            db.query(Resume)
+            .filter(Resume.user_id == user_id, Resume.status == ResumeStatus.PARSED)
+            .order_by(Resume.created_at.desc())
+            .first()
         )
 
     @staticmethod

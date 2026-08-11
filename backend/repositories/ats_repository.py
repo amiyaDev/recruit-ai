@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy.orm import Session
 
 from models.ats_score import ATSScore
+from models.resumes import Resume
 
 
 class ATSRepository:
@@ -25,6 +26,17 @@ class ATSRepository:
             db.query(ATSScore)
             .filter(ATSScore.resume_id == resume_id)
             .order_by(ATSScore.created_at.desc())
+            .all()
+        )
+
+    @staticmethod
+    def list_recent_for_user(db: Session, user_id: uuid.UUID, limit: int = 2) -> list[ATSScore]:
+        return (
+            db.query(ATSScore)
+            .join(Resume, ATSScore.resume_id == Resume.id)
+            .filter(Resume.user_id == user_id)
+            .order_by(ATSScore.created_at.desc())
+            .limit(limit)
             .all()
         )
 
