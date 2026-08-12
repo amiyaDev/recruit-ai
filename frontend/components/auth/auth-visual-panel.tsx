@@ -1,4 +1,4 @@
-export function AuthVisualPanel() {
+export function AuthVisualPanel({type}:{type:'login'| 'signup'}) {
   return (
     <div className="hidden md:flex w-1/2 relative bg-surface-container overflow-hidden items-center justify-center p-stack-lg">
       {/* Animated Gradient Background */}
@@ -27,7 +27,7 @@ export function AuthVisualPanel() {
           <img
             alt="RecruitAI Hero"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            src="https://lh3.googleusercontent.com/aida/AP1WRLssyq5OSAIRhR9DDkvQy5z7ejtYO9cgNs5_s2cR6D7b9qsYZiJCbSvX5-YavylbCJnRrG8caYBGcKSFOrH6OYE8t9fVkVrdQEdeFW00VbQYIpn0PAPQq8J25Y1RYPeNDX3CJI48dLFzfieAiLM5abh48Jdp3gjdJLNZ4DIRwJHpe71AMBTM5jU0CrK3FxTlcILfNcZUg68LicEsMKmac6_mfxeBmYeK1-SbfMHlbjBkQxuRjaVlMDMCJ8I"
+            src={type === 'login'? "/images/login_hero.png": "/images/signup_hero.png"}
           />
           <div className="absolute bottom-6 left-6 z-20 flex items-center gap-3 bg-on-surface/60 backdrop-blur-md py-2 px-4 rounded-full border border-white/10">
             <div className="w-3 h-3 rounded-full bg-tertiary-fixed animate-pulse" />

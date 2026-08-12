@@ -1,6 +1,6 @@
 import { AuthVisualPanel } from "@/components/auth/auth-visual-panel";
 
-export function AuthLayout({ children }: { children: React.ReactNode }) {
+export function AuthLayout({ children, type }: { children: React.ReactNode, type: "login"| 'signup' }) {
   return (
     <div className="min-h-screen bg-on-surface text-surface flex items-center justify-center font-body-md overflow-hidden">
       <div className="w-full min-h-screen flex flex-col md:flex-row relative">
@@ -13,7 +13,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Right Side: Visuals */}
-        <AuthVisualPanel />
+        <AuthVisualPanel type={type} />
       </div>
     </div>
   );
