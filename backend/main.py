@@ -11,6 +11,7 @@ from api.middleware.response_handler import ResponseMiddleware
 from core.exceptions import AppError
 
 app = FastAPI(title=settings.APP_NAME)
+app.add_middleware(ResponseMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
@@ -18,7 +19,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(ResponseMiddleware)
 app.add_exception_handler(AppError, app_error_handler)
 
 
