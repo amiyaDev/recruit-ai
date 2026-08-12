@@ -1,5 +1,6 @@
 import uuid
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from core.constants import ResumeStatus
@@ -30,6 +31,10 @@ class ResumeRepository:
             .limit(limit)
             .all()
         )
+
+    @staticmethod
+    def count_by_user(db: Session, user_id: uuid.UUID) -> int:
+        return db.query(func.count(Resume.id)).filter(Resume.user_id == user_id).scalar() or 0
 
     @staticmethod
     def get_most_recent_parsed_for_user(db: Session, user_id: uuid.UUID) -> Resume | None:

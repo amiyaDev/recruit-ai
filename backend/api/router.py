@@ -7,6 +7,7 @@ from api.v1.endpoints.jobs import router as job_router
 from api.v1.endpoints.ats import router as ats_router
 from api.v1.endpoints.interviews import router as interview_router
 from api.v1.endpoints.chat import router as chat_router
+from api.v1.endpoints.dashboard import router as dashboard_router
 
 api_router = APIRouter()
 
@@ -17,3 +18,4 @@ api_router.include_router(job_router, prefix="/jobs", tags=["Jobs"])
 api_router.include_router(ats_router, prefix="/ats", tags=["ATS"])
 api_router.include_router(interview_router, prefix="/interviews", tags=["Interviews"])
 api_router.include_router(chat_router, prefix="/chat", tags=["Chat"])
+api_router.include_router(dashboard_router, prefix="/dashboard", tags=["Dashboard"])

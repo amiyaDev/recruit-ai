@@ -1,5 +1,6 @@
 import uuid
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from models.job import Job
@@ -29,6 +30,10 @@ class JobRepository:
             .limit(limit)
             .all()
         )
+
+    @staticmethod
+    def count_by_user(db: Session, user_id: uuid.UUID) -> int:
+        return db.query(func.count(Job.id)).filter(Job.created_by == user_id).scalar() or 0
 
     @staticmethod
     def update(db: Session, job: Job, updates: dict) -> Job:

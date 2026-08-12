@@ -340,6 +340,7 @@
 }
 
 .shadcn-btn-primary {
+  cursor: pointer;
   background: linear-gradient(135deg, #4f46e5 0%, #3525cd 100%);
   color: white;
   border-radius: 0.5rem;
@@ -363,6 +364,7 @@
 }
 
 .shadcn-btn-outline {
+  cursor: pointer;
   background: transparent;
   border: 1px solid #e2e8f0;
   color: #0f172a;

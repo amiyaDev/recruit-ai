@@ -1,8 +1,10 @@
 import uuid
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from models.ats_score import ATSScore
+from models.job import Job
 from models.resumes import Resume
 
 
@@ -34,6 +36,28 @@ class ATSRepository:
         return (
             db.query(ATSScore)
             .join(Resume, ATSScore.resume_id == Resume.id)
+            .filter(Resume.user_id == user_id)
+            .order_by(ATSScore.created_at.desc())
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
+    def avg_score_for_user(db: Session, user_id: uuid.UUID) -> float | None:
+        result = (
+            db.query(func.avg(ATSScore.score))
+            .join(Resume, ATSScore.resume_id == Resume.id)
+            .filter(Resume.user_id == user_id)
+            .scalar()
+        )
+        return float(result) if result is not None else None
+
+    @staticmethod
+    def list_recent_with_job_for_user(db: Session, user_id: uuid.UUID, limit: int = 5) -> list[tuple[ATSScore, Job]]:
+        return (
+            db.query(ATSScore, Job)
+            .join(Resume, ATSScore.resume_id == Resume.id)
+            .join(Job, ATSScore.job_id == Job.id)
             .filter(Resume.user_id == user_id)
             .order_by(ATSScore.created_at.desc())
             .limit(limit)
