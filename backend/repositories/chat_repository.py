@@ -1,5 +1,6 @@
 import uuid
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from models.chat import ChatMessage, ChatSession
@@ -29,6 +30,10 @@ class ChatRepository:
             .limit(limit)
             .all()
         )
+
+    @staticmethod
+    def count_sessions_by_user(db: Session, user_id: uuid.UUID) -> int:
+        return db.query(func.count(ChatSession.id)).filter(ChatSession.user_id == user_id).scalar() or 0
 
     @staticmethod
     def set_title_if_missing(db: Session, session: ChatSession, content: str) -> None:

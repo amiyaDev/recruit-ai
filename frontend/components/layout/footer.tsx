@@ -11,8 +11,7 @@ export function Footer() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-8 max-w-7xl mx-auto">
         <div className="col-span-2 md:col-span-1 space-y-6">
           <a className="flex items-center gap-2 group" href="#">
-            <BrandLogo className="w-8 h-8" />
-            <span className="font-headline-md text-lg font-bold text-foreground">RecruitAI</span>
+            <BrandLogo className="h-25 w-auto" />
           </a>
           <p className="font-body-md text-sm text-muted-foreground max-w-xs leading-relaxed">
             Empowering careers through intelligence.

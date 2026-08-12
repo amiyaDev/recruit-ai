@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     MAX_LLM_SPEND_USD: float = 4.50
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
     QDRANT_URL: str = "http://qdrant:6333"
+    QDRANT_API_KEY: str | None = None
     class Config:
         env_file = ".env"
 

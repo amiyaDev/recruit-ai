@@ -1,5 +1,6 @@
 import uuid
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from core.constants import InterviewSessionStatus
@@ -30,6 +31,10 @@ class InterviewRepository:
             .limit(limit)
             .all()
         )
+
+    @staticmethod
+    def count_by_user(db: Session, user_id: uuid.UUID) -> int:
+        return db.query(func.count(InterviewSession.id)).filter(InterviewSession.user_id == user_id).scalar() or 0
 
     @staticmethod
     def list_recent_completed_for_user(db: Session, user_id: uuid.UUID, limit: int = 2) -> list[InterviewSession]:

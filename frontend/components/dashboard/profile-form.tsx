@@ -31,11 +31,6 @@ export function ProfileForm() {
     values: user ? { name: user.name, email: user.email } : undefined,
   });
 
-  // Clear the transient "saved" banner as soon as the user edits again.
-  useEffect(() => {
-    if (isDirty) setJustSaved(false);
-  }, [isDirty]);
-
   const onSubmit = (values: ProfileFormValues) => {
     updateProfile(values);
     setJustSaved(true);
@@ -121,6 +116,7 @@ export function ProfileForm() {
             Email address
           </label>
           <input
+            disabled = {true}
             id="settings-email"
             type="email"
             aria-invalid={Boolean(errors.email)}

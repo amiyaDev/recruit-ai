@@ -20,7 +20,7 @@ export function HeroSection() {
           <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start">
             <button
               type="button"
-              className="shadcn-btn-primary font-body-md px-8 py-4 flex items-center justify-center gap-2"
+              className="shadcn-btn-primary font-body-md px-8 py-4 flex items-center justify-center gap-2 "
             >
               Get Started Free
               <span className="material-symbols-outlined text-[20px]">arrow_forward</span>

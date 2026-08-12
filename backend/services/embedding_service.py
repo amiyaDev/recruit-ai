@@ -8,7 +8,7 @@ from core.config import settings
 
 
 _model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5", cache_dir=".fastembed_cache")
-_client = QdrantClient(url=settings.QDRANT_URL)
+_client = QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
 
 VECTOR_SIZE = 384
 

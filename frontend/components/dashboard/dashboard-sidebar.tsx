@@ -13,15 +13,12 @@ export function DashboardSidebar() {
 
   return (
     <aside className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 z-40 bg-sidebar border-r border-sidebar-border py-stack-lg">
-      <Link href="/dashboard" className="flex items-center gap-3 px-container-margin mb-stack-lg group">
-        <BrandLogo className="w-9 h-9 shrink-0 transition-transform group-hover:scale-105" />
+      <Link href="/dashboard" className="flex-column items-center justify-center px-container-margin mb-stack-lg group">
+        <BrandLogo className="h-20 w-auto shrink-0 transition-transform group-hover:scale-105" />
         <div className="min-w-0">
-          <h1 className="font-headline-md text-lg font-extrabold text-sidebar-foreground leading-none truncate">
-            RecruitAI
-          </h1>
-          <p className="font-label-sm text-[10px] text-muted-foreground tracking-widest uppercase mt-1">
+          <h1 className="font-headline-md  text-[10px] text-muted-foreground tracking-widest uppercase">
             AI Talent Suite
-          </p>
+          </h1>
         </div>
       </Link>
 
