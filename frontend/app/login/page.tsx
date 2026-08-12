@@ -14,7 +14,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const { registered } = await searchParams;
 
   return (
-    <AuthLayout>
+    <AuthLayout type="login">
       <AuthBrand />
 
       <div className="mb-stack-lg">
@@ -35,7 +35,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
       <LoginForm />
 
-      <div className="my-stack-md flex items-center justify-center gap-4 delay-200 fade-in-up">
+      {/* <div className="my-stack-md flex items-center justify-center gap-4 delay-200 fade-in-up">
         <div className="h-px bg-outline/20 flex-1" />
         <span className="font-label-sm text-label-sm text-outline-variant uppercase">
           Or continue with
@@ -45,7 +45,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
       <div className="delay-300 fade-in-up">
         <SocialLoginButton label="Sign in with Google" />
-      </div>
+      </div> */}
 
       <div className="mt-stack-lg text-center delay-300 fade-in-up">
         <p className="font-body-md text-body-md text-surface-variant">
